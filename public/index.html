@@ -779,6 +779,7 @@
     display:flex;
     gap:5px;
     overflow-x:auto;
+    scroll-behavior:smooth;
     padding:8px 16px;
     -ms-overflow-style:none;
     scrollbar-width:none;
@@ -794,26 +795,53 @@
     font-size:10.5px;
     color:var(--ink-soft);
     cursor:pointer;
+    transition:transform 320ms ease, box-shadow 320ms ease;
   }
-  .hole-dot.sel{border-color:var(--fairway); border-width:2.5px; color:var(--fairway); font-weight:700;}
+  .hole-dot.sel{
+    border-color:var(--fairway);
+    border-width:2.5px;
+    color:var(--fairway);
+    font-weight:700;
+    transform:scale(1.28);
+    box-shadow:0 0 0 4px rgba(18,42,32,0.14);
+  }
+  .hole-dot.dot-a.sel{box-shadow:0 0 0 4px rgba(18,42,32,0.28);}
+  .hole-dot.dot-b.sel{box-shadow:0 0 0 4px rgba(156,59,51,0.28);}
+  .hole-dot.dot-tie.sel{box-shadow:0 0 0 4px rgba(200,162,75,0.32);}
   .hole-dot.dot-a{background:var(--fairway); border-color:var(--fairway); color:var(--paper);}
   .hole-dot.dot-b{background:var(--pin-red); border-color:var(--pin-red); color:var(--paper);}
   .hole-dot.dot-tie{background:var(--gold); border-color:var(--gold); color:var(--fairway);}
   .hole-dot.dot-full{background:var(--turf); border-color:var(--turf); color:var(--paper);}
   .hole-dot.dot-partial{background:rgba(200,162,75,0.4); border-color:var(--gold);}
   .hole-label{
-    text-align:center;
-    font-family:'Oswald',sans-serif;
-    font-weight:600;
-    font-size:13px;
+    display:flex;
+    align-items:baseline;
+    justify-content:center;
+    gap:6px;
+    margin:10px 16px 8px;
+    animation:hole-fade-in 480ms ease;
+  }
+  .hole-label .hl-num{
+    font-family:'Anton',sans-serif;
+    font-size:26px;
     color:var(--fairway);
-    text-transform:uppercase;
-    margin:6px 16px 6px;
+    line-height:1;
+  }
+  .hole-label .hl-of{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    letter-spacing:0.05em;
+  }
+  @keyframes hole-fade-in{
+    from{opacity:0; transform:translateY(8px);}
+    to{opacity:1; transform:translateY(0);}
   }
   .mu-pick.big{
     display:flex;
     gap:8px;
     padding:0 16px 16px;
+    animation:hole-fade-in 480ms ease;
   }
   .mu-pick.big button{
     flex:1;
@@ -831,6 +859,7 @@
     grid-template-columns:1fr 1fr;
     gap:10px;
     padding:0 16px 16px;
+    animation:hole-fade-in 480ms ease;
   }
   .hin-team-label{
     font-family:'Space Mono',monospace;
@@ -1865,6 +1894,11 @@
     if(ptsEl) ptsEl.textContent = fmtPts(a) + '–' + fmtPts(b);
   }
 
+  function round1HoleComplete(idx){
+    const hs = state.holeScores.r1;
+    return [...hs.teamA, ...hs.teamB].every(arr => arr[idx] !== null);
+  }
+
   function renderRound1(){
     const container = document.getElementById('pick-r1');
     const hole = selectedHole.r1;
@@ -1891,7 +1925,7 @@
     container.innerHTML = `
       <div class="live-total-banner">${bannerHtml}</div>
       ${holeStripHtml(holeCompletenessClass, hole)}
-      <p class="hole-label">Hole ${hole} — enter gross strokes</p>
+      <p class="hole-label"><span class="hl-num">HOLE ${hole}</span><span class="hl-of">OF 18</span></p>
       <div class="hole-input-grid">${cols}</div>
     `;
 
@@ -1909,6 +1943,14 @@
         updateRound1Live();
         updateScoreboard();
         queueSave();
+
+        // Once every player has a score for this hole, glide to the next one.
+        if(v !== null && round1HoleComplete(idx) && hole < 18){
+          setTimeout(()=>{
+            selectedHole.r1 = hole + 1;
+            renderRound1();
+          }, 650);
+        }
       });
     });
 
@@ -1945,7 +1987,7 @@
     return {a, b, thru, diff, decided, winner, label};
   }
 
-  function renderMatchScoring(container, holesArr, holeRef, aLabel, bLabel, onPick){
+  function renderMatchScoring(container, holesArr, holeRef, aLabel, bLabel, onPick, onAdvance){
     const hole = holeRef.value;
     const idx = hole-1;
     const status = computeMatchStatus(holesArr);
@@ -1957,7 +1999,7 @@
         const v = holesArr[h-1];
         return v==='a'?'dot-a': v==='b'?'dot-b': v==='tie'?'dot-tie':'dot-empty';
       }, hole)}
-      <p class="hole-label">Hole ${hole}</p>
+      <p class="hole-label"><span class="hl-num">HOLE ${hole}</span><span class="hl-of">OF 18</span></p>
       <div class="mu-pick big">
         <button class="${sel==='a'?'sel-a':''}" data-side="a">${escapeHtml(aLabel)}</button>
         <button class="${sel==='tie'?'sel-tie':''}" data-side="tie">Tie</button>
@@ -1968,19 +2010,29 @@
     container.querySelectorAll('.hole-dot').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         holeRef.value = parseInt(btn.dataset.hole,10);
-        renderMatchScoring(container, holesArr, holeRef, aLabel, bLabel, onPick);
+        renderMatchScoring(container, holesArr, holeRef, aLabel, bLabel, onPick, onAdvance);
       });
     });
     container.querySelectorAll('.mu-pick.big button').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const side = btn.dataset.side;
         const cur = holesArr[idx];
-        holesArr[idx] = (cur===side) ? null : side;
+        const settingNew = cur !== side;
+        holesArr[idx] = settingNew ? side : null;
         onPick();
+        // Picked a result (not un-picking) — glide to the next hole.
+        if(settingNew && hole < 18 && onAdvance){
+          setTimeout(onAdvance, 650);
+        }
       });
     });
 
     return status;
+  }
+
+  function updateRoundPtsTally(ptsId, roundKey){
+    const {a, b} = tallyPicks(state.picks[roundKey]);
+    document.getElementById(ptsId).textContent = fmtPts(a) + '–' + fmtPts(b);
   }
 
   function renderPairRound(containerId, ptsId, roundKey, pairIdxs){
@@ -1996,16 +2048,23 @@
       const holesArr = state.holeScores[roundKey][mi];
       const scoringDiv = wrap.querySelector('.match-scoring');
       const holeRef = {get value(){return selectedHole[roundKey][mi];}, set value(v){selectedHole[roundKey][mi]=v;}};
-      const status = renderMatchScoring(scoringDiv, holesArr, holeRef, aNames, bNames, ()=>{
+      let onPickFn, onAdvanceFn;
+      onPickFn = ()=>{
         const s = computeMatchStatus(holesArr);
         state.picks[roundKey][mi] = s.decided ? s.winner : null;
-        renderRounds();
+        renderMatchScoring(scoringDiv, holesArr, holeRef, aNames, bNames, onPickFn, onAdvanceFn);
+        updateRoundPtsTally(ptsId, roundKey);
+        updateScoreboard();
         queueSave();
-      });
+      };
+      onAdvanceFn = ()=>{
+        holeRef.value = Math.min(18, holeRef.value + 1);
+        renderMatchScoring(scoringDiv, holesArr, holeRef, aNames, bNames, onPickFn, onAdvanceFn);
+      };
+      const status = renderMatchScoring(scoringDiv, holesArr, holeRef, aNames, bNames, onPickFn, onAdvanceFn);
       state.picks[roundKey][mi] = status.decided ? status.winner : null;
     });
-    const {a, b} = tallyPicks(state.picks[roundKey]);
-    document.getElementById(ptsId).textContent = fmtPts(a) + '–' + fmtPts(b);
+    updateRoundPtsTally(ptsId, roundKey);
   }
 
   function renderSinglesRound(containerId, ptsId, roundKey){
@@ -2021,16 +2080,23 @@
       const holesArr = state.holeScores[roundKey][i];
       const scoringDiv = wrap.querySelector('.match-scoring');
       const holeRef = {get value(){return selectedHole[roundKey][i];}, set value(v){selectedHole[roundKey][i]=v;}};
-      const status = renderMatchScoring(scoringDiv, holesArr, holeRef, aName, bName, ()=>{
+      let onPickFn, onAdvanceFn;
+      onPickFn = ()=>{
         const s = computeMatchStatus(holesArr);
         state.picks[roundKey][i] = s.decided ? s.winner : null;
-        renderRounds();
+        renderMatchScoring(scoringDiv, holesArr, holeRef, aName, bName, onPickFn, onAdvanceFn);
+        updateRoundPtsTally(ptsId, roundKey);
+        updateScoreboard();
         queueSave();
-      });
+      };
+      onAdvanceFn = ()=>{
+        holeRef.value = Math.min(18, holeRef.value + 1);
+        renderMatchScoring(scoringDiv, holesArr, holeRef, aName, bName, onPickFn, onAdvanceFn);
+      };
+      const status = renderMatchScoring(scoringDiv, holesArr, holeRef, aName, bName, onPickFn, onAdvanceFn);
       state.picks[roundKey][i] = status.decided ? status.winner : null;
     }
-    const {a, b} = tallyPicks(state.picks[roundKey]);
-    document.getElementById(ptsId).textContent = fmtPts(a) + '–' + fmtPts(b);
+    updateRoundPtsTally(ptsId, roundKey);
   }
 
   function renderRounds(){

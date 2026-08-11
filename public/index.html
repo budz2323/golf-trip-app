@@ -718,6 +718,175 @@
     color:var(--fairway);
   }
 
+  /* Hole-by-hole scoring */
+  .live-total-banner{
+    display:flex;
+    align-items:center;
+    border:1px solid var(--line);
+    border-radius:8px;
+    margin:12px 16px 0;
+    overflow:hidden;
+  }
+  .ltb-side{
+    flex:1;
+    padding:10px 8px;
+    text-align:center;
+    background:var(--paper-dim);
+  }
+  .ltb-side.lead{background:var(--gold); }
+  .ltb-name{
+    display:block;
+    font-family:'Space Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:2px;
+  }
+  .ltb-num{
+    display:block;
+    font-family:'Anton',sans-serif;
+    font-size:22px;
+    color:var(--fairway);
+  }
+  .ltb-mid{
+    width:44px;
+    text-align:center;
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    color:var(--ink-soft);
+    letter-spacing:0.06em;
+  }
+  .match-status{
+    text-align:center;
+    font-family:'Anton',sans-serif;
+    font-size:15px;
+    color:var(--fairway);
+    text-transform:uppercase;
+    margin:12px 16px 8px;
+    padding:8px;
+    background:var(--paper-dim);
+    border-radius:6px;
+  }
+  .hole-status{
+    text-align:center;
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin:8px 16px 4px;
+  }
+  .hole-strip{
+    display:flex;
+    gap:5px;
+    overflow-x:auto;
+    padding:8px 16px;
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+  }
+  .hole-strip::-webkit-scrollbar{display:none;}
+  .hole-dot{
+    flex:0 0 auto;
+    width:28px; height:28px;
+    border-radius:50%;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .hole-dot.sel{border-color:var(--fairway); border-width:2.5px; color:var(--fairway); font-weight:700;}
+  .hole-dot.dot-a{background:var(--fairway); border-color:var(--fairway); color:var(--paper);}
+  .hole-dot.dot-b{background:var(--pin-red); border-color:var(--pin-red); color:var(--paper);}
+  .hole-dot.dot-tie{background:var(--gold); border-color:var(--gold); color:var(--fairway);}
+  .hole-dot.dot-full{background:var(--turf); border-color:var(--turf); color:var(--paper);}
+  .hole-dot.dot-partial{background:rgba(200,162,75,0.4); border-color:var(--gold);}
+  .hole-label{
+    text-align:center;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    color:var(--fairway);
+    text-transform:uppercase;
+    margin:6px 16px 6px;
+  }
+  .mu-pick.big{
+    display:flex;
+    gap:8px;
+    padding:0 16px 16px;
+  }
+  .mu-pick.big button{
+    flex:1;
+    width:auto;
+    height:auto;
+    border-radius:8px;
+    padding:12px 6px;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    text-transform:uppercase;
+  }
+  .hole-input-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    padding:0 16px 16px;
+  }
+  .hin-team-label{
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    margin:0 0 6px;
+  }
+  .hin-team-label.a{color:var(--fairway);}
+  .hin-team-label.b{color:var(--pin-red);}
+  .hole-input-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    padding:5px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .hin-name{
+    font-size:12.5px;
+    font-weight:500;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .hin-score{
+    width:48px;
+    padding:6px 4px;
+    text-align:center;
+    border:1px solid var(--line);
+    border-radius:5px;
+    font-family:'Space Mono',monospace;
+    font-size:13px;
+    background:#fff;
+  }
+  .hin-score:focus{outline:none; border-color:var(--gold);}
+  .match-block{
+    margin-bottom:6px;
+  }
+  .match-block + .match-block{
+    border-top:1px dashed var(--line);
+    padding-top:6px;
+  }
+  .match-names{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:10px 16px 0;
+  }
+  .match-names .mn-vs{
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    margin:0 6px;
+    color:var(--ink-soft);
+  }
+
   footer{
     text-align:center;
     padding:22px 20px 40px;
@@ -851,12 +1020,12 @@
       <div class="round-head">
         <p class="round-tag">Day 1 &middot; AM</p>
         <h3 class="round-title">Round 1 — Individual Stroke Play</h3>
-        <p class="round-meta">Everyone plays their own ball, net score. Team total = sum of all 4 net scores. 1 point to the low team.</p>
+        <p class="round-meta">Everyone plays their own ball. Enter gross strokes hole-by-hole below — net team total updates live.</p>
       </div>
+      <div id="pick-r1"></div>
       <div class="round-points">
-        <span>Winner gets (tie = half each)</span>
-        <div class="mu-pick" id="pick-r1"></div>
-        <span class="pts">1 pt</span>
+        <span>Team net total &middot; tie = half each</span>
+        <span class="pts" id="ptsr1">0–0</span>
       </div>
     </div>
   </section>
@@ -867,7 +1036,7 @@
       <div class="round-head">
         <p class="round-tag">Day 1 &middot; PM</p>
         <h3 class="round-title">Round 2 — 2-Man Best Ball</h3>
-        <p class="round-meta">Split into pairs (1&amp;2, 3&amp;4 by roster order). Better net score of the pair counts each hole.</p>
+        <p class="round-meta">Split into pairs (1&amp;2, 3&amp;4 by roster order). Tap who wins each hole — match status updates live.</p>
       </div>
       <div class="matchups" id="matchups-r2"></div>
       <div class="round-points"><span>2 matches &middot; 1 pt each, tie = 0.5</span><span class="pts" id="ptsr2">0–0</span></div>
@@ -933,7 +1102,16 @@
     rankOrder: [0,1,2,3,4,5,6,7], // manual override order for undrafted ranking (pool indices)
     teamA: [],
     teamB: [],
-    picks: { r1: null, r2: [null,null], r3: [null,null], r4: [null,null,null,null] }
+    picks: { r1: null, r2: [null,null], r3: [null,null], r4: [null,null,null,null] },
+    holeScores: {
+      r1: {
+        teamA: [Array(18).fill(null), Array(18).fill(null), Array(18).fill(null), Array(18).fill(null)],
+        teamB: [Array(18).fill(null), Array(18).fill(null), Array(18).fill(null), Array(18).fill(null)]
+      },
+      r2: [Array(18).fill(null), Array(18).fill(null)],
+      r3: [Array(18).fill(null), Array(18).fill(null)],
+      r4: [Array(18).fill(null), Array(18).fill(null), Array(18).fill(null), Array(18).fill(null)]
+    }
   };
 
   let state = JSON.parse(JSON.stringify(defaultState));
@@ -1001,6 +1179,26 @@
     }
     if(!Array.isArray(state.teamA)) state.teamA = [];
     if(!Array.isArray(state.teamB)) state.teamB = [];
+
+    // Guard hole-by-hole data shape — always exactly 18 holes per array.
+    const empty18 = () => Array(18).fill(null);
+    const fix18 = (arr) => (Array.isArray(arr) && arr.length === 18) ? arr : empty18();
+    if(!state.holeScores || typeof state.holeScores !== 'object'){
+      state.holeScores = JSON.parse(JSON.stringify(defaultState.holeScores));
+    }
+    const hs = state.holeScores;
+    if(!hs.r1 || !Array.isArray(hs.r1.teamA) || hs.r1.teamA.length !== 4 || !Array.isArray(hs.r1.teamB) || hs.r1.teamB.length !== 4){
+      hs.r1 = { teamA:[empty18(),empty18(),empty18(),empty18()], teamB:[empty18(),empty18(),empty18(),empty18()] };
+    } else {
+      hs.r1.teamA = hs.r1.teamA.map(fix18);
+      hs.r1.teamB = hs.r1.teamB.map(fix18);
+    }
+    ['r2','r3'].forEach(r=>{
+      if(!Array.isArray(hs[r]) || hs[r].length !== 2) hs[r] = [empty18(), empty18()];
+      else hs[r] = hs[r].map(fix18);
+    });
+    if(!Array.isArray(hs.r4) || hs.r4.length !== 4) hs.r4 = [empty18(),empty18(),empty18(),empty18()];
+    else hs.r4 = hs.r4.map(fix18);
   }
 
   async function load(){
@@ -1549,7 +1747,7 @@
     document.getElementById('footAvgB').textContent = 'Team HC total: ' + total(state.teamB);
   }
 
-  // ================= ROUNDS =================
+  // ================= ROUNDS (hole-by-hole live scoring) =================
 
   function nameAt(key, idx){
     const arr = state[key];
@@ -1570,35 +1768,219 @@
     return {a, b};
   }
 
-  function pickButtonsHtml(sel, dataAttrs){
-    return `
-      <button class="${sel==='a'?'sel-a':''}" ${dataAttrs} data-side="a">A</button>
-      <button class="${sel==='tie'?'sel-tie':''}" ${dataAttrs} data-side="tie" title="Tie — half point each">T</button>
-      <button class="${sel==='b'?'sel-b':''}" ${dataAttrs} data-side="b">B</button>
+  // Which hole is currently shown per round/match — view-only, not synced/saved.
+  let selectedHole = {
+    r1: 1,
+    r2: [1,1],
+    r3: [1,1],
+    r4: [1,1,1,1]
+  };
+
+  function holeStripHtml(colorForHole, selected){
+    let html = '<div class="hole-strip">';
+    for(let h=1; h<=18; h++){
+      html += `<button class="hole-dot ${colorForHole(h)}${h===selected?' sel':''}" data-hole="${h}">${h}</button>`;
+    }
+    html += '</div>';
+    return html;
+  }
+
+  // ---- Round 1: individual net stroke play ----
+
+  function computeStrokePlayTotals(){
+    const hs = state.holeScores.r1;
+    if(state.teamA.length < 4 || state.teamB.length < 4){
+      return { aDisplay: '–', bDisplay: '–', minThru: 0, decided: false, winner: null };
+    }
+    function sumTeam(team){
+      let netTotal = 0, minFilled = 18, anyFilled = false;
+      state[team].forEach((p, i)=>{
+        const arr = hs[team][i] || Array(18).fill(null);
+        let gross = 0, filled = 0;
+        arr.forEach(v=>{ if(v!==null){ gross += v; filled++; } });
+        minFilled = Math.min(minFilled, filled);
+        if(filled>0) anyFilled = true;
+        const hc = Number(p.hc)||0;
+        netTotal += gross - hc*(filled/18);
+      });
+      return { netTotal, minFilled, anyFilled };
+    }
+    const a = sumTeam('teamA');
+    const b = sumTeam('teamB');
+    const minThru = Math.min(a.minFilled, b.minFilled);
+    const decided = a.minFilled===18 && b.minFilled===18;
+    let winner = null;
+    if(decided){
+      winner = Math.abs(a.netTotal-b.netTotal) < 0.001 ? 'tie' : (a.netTotal < b.netTotal ? 'a' : 'b');
+    }
+    return {
+      aDisplay: a.anyFilled ? a.netTotal.toFixed(1) : '–',
+      bDisplay: b.anyFilled ? b.netTotal.toFixed(1) : '–',
+      minThru, decided, winner
+    };
+  }
+
+  function holeCompletenessClass(h){
+    const hs = state.holeScores.r1;
+    const idx = h-1;
+    const vals = [...hs.teamA, ...hs.teamB].map(arr=>arr[idx]);
+    const filled = vals.filter(v=>v!==null).length;
+    if(filled===0) return 'dot-empty';
+    if(filled===8) return 'dot-full';
+    return 'dot-partial';
+  }
+
+  function round1BannerHtml(){
+    const totals = computeStrokePlayTotals();
+    const statusText = !totals.decided && totals.minThru===0
+      ? 'Not started'
+      : (totals.decided ? 'Final' : `In progress — thru ${totals.minThru}`);
+    const aLead = totals.aDisplay!=='–' && totals.bDisplay!=='–' && parseFloat(totals.aDisplay) < parseFloat(totals.bDisplay);
+    const bLead = totals.aDisplay!=='–' && totals.bDisplay!=='–' && parseFloat(totals.bDisplay) < parseFloat(totals.aDisplay);
+    return {
+      html: `
+        <div class="ltb-side${aLead?' lead':''}"><span class="ltb-name">${escapeHtml(state.teamAName)}</span><span class="ltb-num">${totals.aDisplay}</span></div>
+        <div class="ltb-mid">NET<br>${escapeHtml(statusText)}</div>
+        <div class="ltb-side${bLead?' lead':''}"><span class="ltb-name">${escapeHtml(state.teamBName)}</span><span class="ltb-num">${totals.bDisplay}</span></div>
+      `,
+      totals
+    };
+  }
+
+  // Lightweight update after a single score entry — refreshes the totals
+  // banner, hole strip colors, and points tally WITHOUT rebuilding the
+  // input grid, so typing/tabbing between player fields isn't disrupted.
+  function updateRound1Live(){
+    const container = document.getElementById('pick-r1');
+    const banner = container.querySelector('.live-total-banner');
+    const {html, totals} = round1BannerHtml();
+    if(banner) banner.innerHTML = html;
+    container.querySelectorAll('.hole-strip .hole-dot').forEach(dot=>{
+      const h = parseInt(dot.dataset.hole, 10);
+      dot.className = 'hole-dot ' + holeCompletenessClass(h) + (h===selectedHole.r1 ? ' sel' : '');
+    });
+    state.picks.r1 = totals.decided ? totals.winner : null;
+    const {a, b} = tallyPicks([state.picks.r1]);
+    const ptsEl = document.getElementById('ptsr1');
+    if(ptsEl) ptsEl.textContent = fmtPts(a) + '–' + fmtPts(b);
+  }
+
+  function renderRound1(){
+    const container = document.getElementById('pick-r1');
+    const hole = selectedHole.r1;
+    const idx = hole-1;
+    const hs = state.holeScores.r1;
+    const {html: bannerHtml, totals} = round1BannerHtml();
+    state.picks.r1 = totals.decided ? totals.winner : null;
+
+    function inputRow(team, i){
+      const name = nameAt(team, i);
+      const val = hs[team][i][idx];
+      return `<div class="hole-input-row">
+        <span class="hin-name">${escapeHtml(name)}</span>
+        <input type="number" min="1" max="15" inputmode="numeric" class="hin-score" data-team="${team}" data-pidx="${i}" value="${val===null?'':val}" placeholder="–">
+      </div>`;
+    }
+
+    let cols = `<div><p class="hin-team-label a">${escapeHtml(state.teamAName)}</p>`;
+    for(let i=0;i<4;i++) cols += inputRow('teamA', i);
+    cols += `</div><div><p class="hin-team-label b">${escapeHtml(state.teamBName)}</p>`;
+    for(let i=0;i<4;i++) cols += inputRow('teamB', i);
+    cols += `</div>`;
+
+    container.innerHTML = `
+      <div class="live-total-banner">${bannerHtml}</div>
+      ${holeStripHtml(holeCompletenessClass, hole)}
+      <p class="hole-label">Hole ${hole} — enter gross strokes</p>
+      <div class="hole-input-grid">${cols}</div>
     `;
-  }
 
-  function renderRounds(){
-    renderSinglePick('pick-r1', 'r1');
-    renderPairRound('matchups-r2', 'ptsr2', 'r2', [[0,1],[2,3]]);
-    renderPairRound('matchups-r3', 'ptsr3', 'r3', [[0,1],[2,3]]);
-    renderSinglesRound('matchups-r4', 'ptsr4', 'r4');
-    updateScoreboard();
-  }
-
-  function renderSinglePick(containerId, roundKey){
-    const el = document.getElementById(containerId);
-    const sel = state.picks[roundKey];
-    el.innerHTML = pickButtonsHtml(sel, `data-round="${roundKey}"`);
-    el.querySelectorAll('button').forEach(btn=>{
+    container.querySelectorAll('.hole-dot').forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        const cur = state.picks[roundKey];
-        const side = btn.dataset.side;
-        state.picks[roundKey] = (cur===side) ? null : side;
-        renderRounds();
+        selectedHole.r1 = parseInt(btn.dataset.hole,10);
+        renderRound1();
+      });
+    });
+    container.querySelectorAll('.hin-score').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        const team = inp.dataset.team, pidx = parseInt(inp.dataset.pidx,10);
+        const v = inp.value === '' ? null : Math.max(1, Math.min(15, parseInt(inp.value,10)||0));
+        state.holeScores.r1[team][pidx][idx] = v;
+        updateRound1Live();
+        updateScoreboard();
         queueSave();
       });
     });
+
+    const {a, b} = tallyPicks([state.picks.r1]);
+    document.getElementById('ptsr1').textContent = fmtPts(a) + '–' + fmtPts(b);
+  }
+
+  // ---- Match play rounds (2, 3, 4): pick winner of each hole ----
+
+  function computeMatchStatus(holesArr){
+    let a=0, b=0, thru=0;
+    for(let i=0;i<18;i++){
+      const v = holesArr[i];
+      if(v===null) continue;
+      thru++;
+      if(v==='a') a++; else if(v==='b') b++;
+    }
+    const diff = a-b;
+    const remaining = 18 - thru;
+    let decided=false, winner=null, label='';
+    if(thru===0){
+      label = 'NOT STARTED';
+    } else if(Math.abs(diff) > remaining && remaining > 0){
+      decided = true;
+      winner = diff>0 ? 'a' : 'b';
+      label = (winner==='a'?'TEAM A':'TEAM B') + ' WINS ' + Math.abs(diff) + '&' + remaining;
+    } else if(thru===18){
+      decided = true;
+      winner = diff===0 ? 'tie' : (diff>0?'a':'b');
+      label = diff===0 ? 'HALVED' : ((winner==='a'?'TEAM A':'TEAM B') + ' WINS ' + Math.abs(diff) + ' UP');
+    } else {
+      label = diff===0 ? ('ALL SQUARE THRU ' + thru) : ((diff>0?'TEAM A':'TEAM B') + ' ' + Math.abs(diff) + ' UP THRU ' + thru);
+    }
+    return {a, b, thru, diff, decided, winner, label};
+  }
+
+  function renderMatchScoring(container, holesArr, holeRef, aLabel, bLabel, onPick){
+    const hole = holeRef.value;
+    const idx = hole-1;
+    const status = computeMatchStatus(holesArr);
+    const sel = holesArr[idx];
+
+    container.innerHTML = `
+      <p class="match-status">${status.label}</p>
+      ${holeStripHtml((h)=>{
+        const v = holesArr[h-1];
+        return v==='a'?'dot-a': v==='b'?'dot-b': v==='tie'?'dot-tie':'dot-empty';
+      }, hole)}
+      <p class="hole-label">Hole ${hole}</p>
+      <div class="mu-pick big">
+        <button class="${sel==='a'?'sel-a':''}" data-side="a">${escapeHtml(aLabel)}</button>
+        <button class="${sel==='tie'?'sel-tie':''}" data-side="tie">Tie</button>
+        <button class="${sel==='b'?'sel-b':''}" data-side="b">${escapeHtml(bLabel)}</button>
+      </div>
+    `;
+
+    container.querySelectorAll('.hole-dot').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        holeRef.value = parseInt(btn.dataset.hole,10);
+        renderMatchScoring(container, holesArr, holeRef, aLabel, bLabel, onPick);
+      });
+    });
+    container.querySelectorAll('.mu-pick.big button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const side = btn.dataset.side;
+        const cur = holesArr[idx];
+        holesArr[idx] = (cur===side) ? null : side;
+        onPick();
+      });
+    });
+
+    return status;
   }
 
   function renderPairRound(containerId, ptsId, roundKey, pairIdxs){
@@ -1607,25 +1989,20 @@
     pairIdxs.forEach((pair, mi)=>{
       const aNames = pair.map(i=>nameAt('teamA', i)).join(' / ');
       const bNames = pair.map(i=>nameAt('teamB', i)).join(' / ');
-      const sel = state.picks[roundKey][mi];
-      const row = document.createElement('div');
-      row.className = 'matchup-row';
-      row.innerHTML = `
-        <span class="mu-side">${escapeHtml(aNames)}</span>
-        <div class="mu-pick">${pickButtonsHtml(sel, `data-mi="${mi}"`)}</div>
-        <span class="mu-side right">${escapeHtml(bNames)}</span>
-      `;
-      el.appendChild(row);
-    });
-    el.querySelectorAll('button').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const mi = parseInt(btn.dataset.mi,10);
-        const side = btn.dataset.side;
-        const cur = state.picks[roundKey][mi];
-        state.picks[roundKey][mi] = (cur===side) ? null : side;
+      const wrap = document.createElement('div');
+      wrap.className = 'match-block';
+      wrap.innerHTML = `<p class="match-names"><span class="mn-a">${escapeHtml(aNames)}</span><span class="mn-vs">vs</span><span class="mn-b">${escapeHtml(bNames)}</span></p><div class="match-scoring"></div>`;
+      el.appendChild(wrap);
+      const holesArr = state.holeScores[roundKey][mi];
+      const scoringDiv = wrap.querySelector('.match-scoring');
+      const holeRef = {get value(){return selectedHole[roundKey][mi];}, set value(v){selectedHole[roundKey][mi]=v;}};
+      const status = renderMatchScoring(scoringDiv, holesArr, holeRef, aNames, bNames, ()=>{
+        const s = computeMatchStatus(holesArr);
+        state.picks[roundKey][mi] = s.decided ? s.winner : null;
         renderRounds();
         queueSave();
       });
+      state.picks[roundKey][mi] = status.decided ? status.winner : null;
     });
     const {a, b} = tallyPicks(state.picks[roundKey]);
     document.getElementById(ptsId).textContent = fmtPts(a) + '–' + fmtPts(b);
@@ -1637,28 +2014,31 @@
     for(let i=0;i<4;i++){
       const aName = nameAt('teamA', i);
       const bName = nameAt('teamB', i);
-      const sel = state.picks[roundKey][i];
-      const row = document.createElement('div');
-      row.className = 'matchup-row';
-      row.innerHTML = `
-        <span class="mu-side">${escapeHtml(aName)}</span>
-        <div class="mu-pick">${pickButtonsHtml(sel, `data-mi="${i}"`)}</div>
-        <span class="mu-side right">${escapeHtml(bName)}</span>
-      `;
-      el.appendChild(row);
-    }
-    el.querySelectorAll('button').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const mi = parseInt(btn.dataset.mi,10);
-        const side = btn.dataset.side;
-        const cur = state.picks[roundKey][mi];
-        state.picks[roundKey][mi] = (cur===side) ? null : side;
+      const wrap = document.createElement('div');
+      wrap.className = 'match-block';
+      wrap.innerHTML = `<p class="match-names"><span class="mn-a">${escapeHtml(aName)}</span><span class="mn-vs">vs</span><span class="mn-b">${escapeHtml(bName)}</span></p><div class="match-scoring"></div>`;
+      el.appendChild(wrap);
+      const holesArr = state.holeScores[roundKey][i];
+      const scoringDiv = wrap.querySelector('.match-scoring');
+      const holeRef = {get value(){return selectedHole[roundKey][i];}, set value(v){selectedHole[roundKey][i]=v;}};
+      const status = renderMatchScoring(scoringDiv, holesArr, holeRef, aName, bName, ()=>{
+        const s = computeMatchStatus(holesArr);
+        state.picks[roundKey][i] = s.decided ? s.winner : null;
         renderRounds();
         queueSave();
       });
-    });
+      state.picks[roundKey][i] = status.decided ? status.winner : null;
+    }
     const {a, b} = tallyPicks(state.picks[roundKey]);
     document.getElementById(ptsId).textContent = fmtPts(a) + '–' + fmtPts(b);
+  }
+
+  function renderRounds(){
+    renderRound1();
+    renderPairRound('matchups-r2', 'ptsr2', 'r2', [[0,1],[2,3]]);
+    renderPairRound('matchups-r3', 'ptsr3', 'r3', [[0,1],[2,3]]);
+    renderSinglesRound('matchups-r4', 'ptsr4', 'r4');
+    updateScoreboard();
   }
 
   function updateScoreboard(){

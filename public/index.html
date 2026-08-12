@@ -119,6 +119,34 @@
     margin:0 auto 18px;
     padding:0 18px;
   }
+  .identity-bar{
+    max-width:640px;
+    margin:0 auto 10px;
+    padding:10px 18px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--paper-dim);
+    border-bottom:1px solid var(--line);
+  }
+  .ib-label{
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    flex:0 0 auto;
+  }
+  .identity-bar select{
+    flex:1;
+    min-width:0;
+    padding:7px 8px;
+    border:1px solid var(--gold);
+    border-radius:6px;
+    background:#fff;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    color:var(--fairway);
+  }
   .api-settings summary{
     font-family:'Space Mono',monospace;
     font-size:11px;
@@ -210,6 +238,59 @@
     border-radius:6px;
   }
   .team-hc-badge b{color:var(--fairway);}
+
+  .ov-row{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:11px 12px;
+    margin-bottom:8px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    transition:transform 120ms ease;
+  }
+  .ov-row:active{transform:scale(0.98);}
+  .ov-row.decided{border-color:var(--gold); background:var(--paper-dim);}
+  .ov-meta{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    min-width:0;
+  }
+  .ov-round{
+    font-family:'Space Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .ov-names{
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .ov-status{
+    flex:0 0 auto;
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    padding:5px 9px;
+    border-radius:14px;
+    text-align:center;
+    white-space:nowrap;
+    background:var(--paper-dim);
+    color:var(--ink-soft);
+  }
+  .ov-status.lead-a{background:var(--fairway); color:var(--paper);}
+  .ov-status.lead-b{background:var(--pin-red); color:var(--paper);}
+  .ov-status.lead-tie{background:var(--gold); color:var(--fairway);}
 
   .scoreboard{
     display:flex;
@@ -476,6 +557,9 @@
   .rank-row .rname{
     font-weight:500;
     font-size:14.5px;
+    display:flex;
+    align-items:center;
+    gap:6px;
   }
   .rank-row .rhc{
     font-family:'Space Mono',monospace;
@@ -517,6 +601,151 @@
   }
   .rank-row .drafted-tag.a{background:var(--fairway);}
   .rank-row .drafted-tag.b{background:var(--pin-red);}
+
+  /* Player cards (Players tab) */
+  .player-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:12px;
+  }
+  .pc-top{
+    display:flex;
+    gap:12px;
+  }
+  .pc-avatar-btn{
+    flex:0 0 auto;
+    width:52px; height:52px;
+    border-radius:50%;
+    border:2px solid var(--gold);
+    background:var(--paper-dim);
+    font-size:26px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    padding:0;
+  }
+  .pc-fields{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .pc-row{
+    display:flex;
+    gap:6px;
+  }
+  .pc-row input[type=text]{
+    flex:1;
+    min-width:0;
+    padding:6px 8px;
+    border:1px solid var(--line);
+    border-radius:5px;
+    font-family:'Oswald',sans-serif;
+    font-size:13px;
+    background:var(--paper-dim);
+  }
+  .pc-row input[type=text].pc-name{font-weight:600;}
+  .pc-row input[type=number]{
+    width:52px;
+    padding:6px 4px;
+    text-align:center;
+    border:1px solid var(--line);
+    border-radius:5px;
+    font-family:'Space Mono',monospace;
+    font-size:13px;
+    background:#fff;
+  }
+  .pc-label{
+    font-family:'Space Mono',monospace;
+    font-size:8.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 -2px;
+  }
+  .pc-hc-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+  }
+  .pc-avatar-btn{
+    overflow:hidden;
+  }
+  .pc-avatar-img{
+    width:100%; height:100%;
+    object-fit:cover;
+    border-radius:50%;
+  }
+  .mini-avatar{
+    flex:0 0 auto;
+    border-radius:50%;
+    object-fit:cover;
+    vertical-align:middle;
+  }
+  .mini-avatar-emoji{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+  }
+  .emoji-picker{
+    display:none;
+    flex-direction:column;
+    gap:10px;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px dashed var(--line);
+  }
+  .emoji-picker.show{display:flex;}
+  .photo-actions{
+    display:flex;
+    gap:8px;
+  }
+  .photo-upload-btn{
+    flex:1;
+    text-align:center;
+    padding:8px;
+    background:var(--fairway);
+    color:var(--paper);
+    border-radius:6px;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:11.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .photo-remove-btn{
+    padding:8px 12px;
+    background:transparent;
+    border:1px solid var(--pin-red);
+    color:var(--pin-red);
+    border-radius:6px;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:11.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .emoji-grid{
+    display:grid;
+    grid-template-columns:repeat(6, 1fr);
+    gap:4px;
+  }
+  .emoji-grid button{
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:18px;
+    padding:6px 0;
+    cursor:pointer;
+  }
+  .emoji-grid button:active{background:var(--gold);}
 
   .draft-log{
     background:var(--paper-dim);
@@ -950,6 +1179,9 @@
     padding:0 16px 16px;
     animation:hole-fade-in 320ms ease;
   }
+  .hole-input-grid > div{
+    min-width:0;
+  }
   .hin-team-label{
     font-family:'Space Mono',monospace;
     font-size:10px;
@@ -962,59 +1194,80 @@
 
   .stroke-stepper{
     display:flex;
-    align-items:center;
-    justify-content:space-between;
+    flex-direction:column;
     gap:6px;
-    padding:6px 0;
+    padding:9px 0;
     border-bottom:1px solid var(--line);
   }
   .ss-name{
-    font-size:12.5px;
-    font-weight:500;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    flex:1;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+    white-space:normal;
+    word-break:break-word;
+    line-height:1.25;
   }
   .ss-controls{
     display:flex;
     align-items:center;
-    gap:2px;
-    flex:0 0 auto;
+    gap:10px;
   }
   .ss-btn{
-    width:26px; height:26px;
+    width:30px; height:30px;
     border-radius:50%;
     border:1.5px solid var(--fairway);
     background:#fff;
     color:var(--fairway);
     font-family:'Oswald',sans-serif;
     font-weight:700;
-    font-size:15px;
+    font-size:16px;
     line-height:1;
     cursor:pointer;
     display:flex;
     align-items:center;
     justify-content:center;
     padding:0;
+    flex:0 0 auto;
     user-select:none;
     -webkit-tap-highlight-color:transparent;
   }
   .ss-btn:active{background:var(--fairway); color:var(--paper);}
+  .ss-btn:disabled{
+    opacity:0.3;
+    cursor:not-allowed;
+    background:var(--paper-dim);
+  }
+  .stroke-stepper.locked .ss-name{color:var(--ink-soft);}
+  .stroke-stepper.locked .ss-value{color:var(--ink-soft);}
+  .lock-note{
+    text-align:center;
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    margin:0 16px 10px;
+    padding:6px 8px;
+    background:rgba(0,0,0,0.04);
+    border-radius:6px;
+  }
   .ss-value{
-    width:28px;
+    width:32px;
     text-align:center;
     font-family:'Anton',sans-serif;
-    font-size:17px;
+    font-size:19px;
     color:var(--ink);
+    flex:0 0 auto;
   }
   /* Bigger variant for match play (fewer, more prominent entries) */
   .stroke-stepper.big{
-    padding:10px 0;
+    padding:12px 0;
   }
-  .stroke-stepper.big .ss-name{font-size:14.5px; font-weight:600;}
-  .stroke-stepper.big .ss-btn{width:34px; height:34px; font-size:18px;}
-  .stroke-stepper.big .ss-value{width:36px; font-size:22px;}
+  .stroke-stepper.big .ss-name{font-size:16px;}
+  .stroke-stepper.big .ss-controls{gap:12px;}
+  .stroke-stepper.big .ss-btn{width:38px; height:38px; font-size:20px;}
+  .stroke-stepper.big .ss-value{width:40px; font-size:24px;}
 
   .match-block{
     margin-bottom:6px;
@@ -1099,12 +1352,19 @@
 
 <nav class="tabs">
   <button data-view="draft" class="active">Draft</button>
+  <button data-view="players">Players</button>
   <button data-view="roster">Roster</button>
+  <button data-view="overview">Overview</button>
   <button data-view="r1">Rd 1</button>
   <button data-view="r2">Rd 2</button>
   <button data-view="r3">Rd 3</button>
   <button data-view="r4">Rd 4</button>
 </nav>
+
+<div class="identity-bar">
+  <span class="ib-label">👤 This device belongs to:</span>
+  <select id="identitySelect"></select>
+</div>
 
 <details class="api-settings" id="apiSettings">
   <summary>⚙ Advanced: use a different API server</summary>
@@ -1150,6 +1410,13 @@
     </div>
   </section>
 
+  <!-- PLAYERS -->
+  <section class="view" id="view-players">
+    <div class="section-head"><h2>Players</h2></div>
+    <p class="section-note">Everyone can jump in and fill out their own card — pick an avatar, add a nickname, set your handicap. Feeds straight into the draft pool.</p>
+    <div id="playerCards"></div>
+  </section>
+
   <!-- ROSTER -->
   <section class="view" id="view-roster">
     <div class="section-head"><h2>Roster &amp; Handicaps</h2></div>
@@ -1166,6 +1433,13 @@
       <div id="rowsB"></div>
       <div class="team-foot"><span id="countB">0 players</span><span id="footAvgB">Team HC total: —</span></div>
     </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="view" id="view-overview">
+    <div class="section-head"><h2>Overview</h2></div>
+    <p class="section-note" id="overviewSummary">—</p>
+    <div id="overviewList"></div>
   </section>
 
   <!-- ROUND 1 -->
@@ -1240,14 +1514,14 @@
     teamAName: 'TEAM A',
     teamBName: 'TEAM B',
     pool: [
-      {name:'Player 1', hc:8},
-      {name:'Player 2', hc:10},
-      {name:'Player 3', hc:12},
-      {name:'Player 4', hc:14},
-      {name:'Player 5', hc:16},
-      {name:'Player 6', hc:18},
-      {name:'Player 7', hc:20},
-      {name:'Player 8', hc:22}
+      {name:'Player 1', hc:8, nickname:'', avatar:'', photo:''},
+      {name:'Player 2', hc:10, nickname:'', avatar:'', photo:''},
+      {name:'Player 3', hc:12, nickname:'', avatar:'', photo:''},
+      {name:'Player 4', hc:14, nickname:'', avatar:'', photo:''},
+      {name:'Player 5', hc:16, nickname:'', avatar:'', photo:''},
+      {name:'Player 6', hc:18, nickname:'', avatar:'', photo:''},
+      {name:'Player 7', hc:20, nickname:'', avatar:'', photo:''},
+      {name:'Player 8', hc:22, nickname:'', avatar:'', photo:''}
     ],
     captainA: null,   // index into pool
     captainB: null,   // index into pool
@@ -1312,22 +1586,72 @@
 
   async function loadApiUrl(){
     try{
-      const res = await window.storage.get(API_URL_KEY, false);
-      if(res && res.value) apiUrl = res.value;
-    }catch(e){ /* not set yet */ }
+      const v = localStorage.getItem(API_URL_KEY);
+      if(v) apiUrl = v;
+    }catch(e){ /* not set yet, or storage blocked */ }
     document.getElementById('apiUrlInput').value = apiUrl;
   }
 
   document.getElementById('apiUrlSaveBtn').addEventListener('click', async ()=>{
     const val = document.getElementById('apiUrlInput').value.trim();
     apiUrl = val;
-    try{ await window.storage.set(API_URL_KEY, val, false); }catch(e){}
+    try{ localStorage.setItem(API_URL_KEY, val); }catch(e){}
     flashSavePill(apiUrl ? 'Saved — syncing…' : 'Live sync URL cleared');
     if(apiUrl){
       document.getElementById('apiSettings').open = false;
       pollRemote();
     }
   });
+
+  // ================= IDENTITY (who's on this device) =================
+  // Purely local/per-device — never synced. '' = anyone can edit anything
+  // (default, so nothing breaks for devices that haven't set this up
+  // yet). 'scorekeeper' = explicit override, edit everything. Otherwise
+  // it's a pool index (as a string) identifying which player this phone
+  // belongs to.
+
+  const IDENTITY_KEY = 'trip-my-identity';
+  let myIdentity = '';
+
+  function loadIdentity(){
+    try{
+      const v = localStorage.getItem(IDENTITY_KEY);
+      if(v !== null) myIdentity = v;
+    }catch(e){ /* not set yet, or storage blocked */ }
+  }
+
+  function renderIdentitySelect(){
+    const sel = document.getElementById('identitySelect');
+    if(!sel) return;
+    const opts = state.pool.map((p,i)=>`<option value="${i}">${escapeHtml(p.avatar ? p.avatar+' ' : '')}${escapeHtml(p.name)}</option>`).join('');
+    sel.innerHTML = `
+      <option value="">Anyone (edit everything)</option>
+      <option value="scorekeeper">🖊 Scorekeeper (edit everything)</option>
+      ${opts}
+    `;
+    sel.value = myIdentity;
+  }
+
+  document.getElementById('identitySelect').addEventListener('change', (e)=>{
+    myIdentity = e.target.value;
+    try{ localStorage.setItem(IDENTITY_KEY, myIdentity); }catch(err){}
+    renderRounds();
+    flashSavePill(myIdentity ? 'Saved to this device' : 'Editing unlocked for everyone');
+  });
+
+  // myIdentity === '' or 'scorekeeper' → no restrictions. Missing poolIdx
+  // (e.g. an older save from before this feature) is also treated as open
+  // rather than silently locking someone out.
+  function canEditPlayer(poolIdx){
+    if(myIdentity === '' || myIdentity === 'scorekeeper') return true;
+    if(poolIdx === undefined || poolIdx === null) return true;
+    return myIdentity === String(poolIdx);
+  }
+  function canEditMatch(poolIdxList){
+    if(myIdentity === '' || myIdentity === 'scorekeeper') return true;
+    if(poolIdxList.some(x => x===undefined || x===null)) return true;
+    return poolIdxList.map(String).includes(myIdentity);
+  }
 
   function sanitizeState(){
     // Guard against a corrupted/short pool from an old save wiping out the
@@ -1346,6 +1670,12 @@
     if(!Array.isArray(state.rankOrder) || state.rankOrder.length !== 8){
       state.rankOrder = [0,1,2,3,4,5,6,7];
     }
+    // Old saves may predate nickname/avatar/photo — backfill so nothing breaks.
+    state.pool.forEach(p=>{
+      if(typeof p.nickname !== 'string') p.nickname = '';
+      if(typeof p.avatar !== 'string') p.avatar = '';
+      if(typeof p.photo !== 'string') p.photo = '';
+    });
     if(!Array.isArray(state.teamA)) state.teamA = [];
     if(!Array.isArray(state.teamB)) state.teamB = [];
 
@@ -1399,6 +1729,7 @@
 
   async function load(){
     await loadApiUrl();
+    loadIdentity();
 
     let loaded = false;
     try{
@@ -1415,13 +1746,13 @@
     }
     if(!loaded){
       try{
-        const res = await window.storage.get(LOCAL_KEY, false);
-        if(res && res.value){
-          const parsed = JSON.parse(res.value);
+        const v = localStorage.getItem(LOCAL_KEY);
+        if(v){
+          const parsed = JSON.parse(v);
           state = Object.assign(JSON.parse(JSON.stringify(defaultState)), parsed);
           pendingSharedSync = true;
         }
-      }catch(e){ /* nothing saved anywhere yet */ }
+      }catch(e){ /* nothing saved anywhere yet, or storage blocked */ }
     }
     sanitizeState();
     lastSyncTime = Date.now();
@@ -1439,8 +1770,8 @@
     const json = JSON.stringify(state);
 
     try{
-      await window.storage.set(LOCAL_KEY, json, false);
-    }catch(e){ /* local backup best-effort */ }
+      localStorage.setItem(LOCAL_KEY, json);
+    }catch(e){ /* local backup best-effort — storage may be full/blocked */ }
 
     try{
       const res = await fetch(apiEndpoint(), {
@@ -1588,7 +1919,7 @@
       const row = document.createElement('div');
       row.className = 'pool-row';
       row.innerHTML = `
-        <span class="idx">${i+1}</span>
+        <span class="idx">${smallAvatarHtml(p, 24) || (i+1)}</span>
         <input type="text" value="${escapeHtml(p.name)}" data-idx="${i}" data-field="name">
         <input type="number" value="${p.hc}" min="0" max="54" data-idx="${i}" data-field="hc">
         <span></span>
@@ -1724,7 +2055,7 @@
       row.className = 'rank-row';
       row.innerHTML = `
         <span class="rnum">${rank+1}</span>
-        <span class="rname">${escapeHtml(p.name)}</span>
+        <span class="rname">${smallAvatarHtml(p, 22)}${escapeHtml(p.name)}</span>
         <span class="rhc">HC ${p.hc}</span>
         <div class="rpick">
           <div class="reorder">
@@ -1849,13 +2180,172 @@
     const teamB = [];
     state.pickLog.forEach(pk=>{
       const p = state.pool[pk.idx];
-      const entry = {name: p.name, hc: p.hc};
+      const entry = {name: p.name, hc: p.hc, nickname: p.nickname||'', avatar: p.avatar||'', photo: p.photo||'', poolIdx: pk.idx};
       if(pk.team === 'a') teamA.push(entry); else teamB.push(entry);
     });
     state.teamA = teamA;
     state.teamB = teamB;
     renderRoster();
     renderRounds();
+  }
+
+  // ================= PLAYERS =================
+
+  const AVATAR_EMOJIS = ['🏌️','⛳','🏆','🔥','😎','🦅','🐺','🦁','🐻','🍺','🥃','💪','🎯','⚡','🤠','🥇','😤','🦍','🐐','🌪️','🍀','🎉'];
+
+  // Resizes/compresses an uploaded photo client-side into a small square
+  // JPEG data URL before it's ever stored. The `photo` field just holds a
+  // URL string — today that's a data: URI, but a real image host later
+  // (S3, Cloudinary, etc.) is a drop-in swap since every place that
+  // displays it just does <img src="..."> either way.
+  function compressImageFile(file, maxDim, quality){
+    maxDim = maxDim || 160;
+    quality = quality || 0.72;
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        const img = new Image();
+        img.onload = ()=>{
+          const size = Math.min(img.width, img.height);
+          const sx = (img.width - size) / 2;
+          const sy = (img.height - size) / 2;
+          const canvas = document.createElement('canvas');
+          canvas.width = maxDim;
+          canvas.height = maxDim;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, sx, sy, size, size, 0, 0, maxDim, maxDim);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = () => reject(new Error('Could not read that image'));
+        img.src = reader.result;
+      };
+      reader.onerror = () => reject(new Error('Could not read that file'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function avatarInnerHtml(p){
+    if(p.photo) return `<img class="pc-avatar-img" src="${p.photo}" alt="">`;
+    return p.avatar || '➕';
+  }
+
+  // Small circular avatar for use inline next to a name elsewhere in the
+  // app (draft board, roster, scoring rows). Returns '' if the player has
+  // neither a photo nor an emoji set, so callers can fall back cleanly.
+  function smallAvatarHtml(p, sizePx){
+    sizePx = sizePx || 26;
+    if(!p) return '';
+    if(p.photo) return `<img class="mini-avatar" src="${p.photo}" style="width:${sizePx}px;height:${sizePx}px;" alt="">`;
+    if(p.avatar) return `<span class="mini-avatar mini-avatar-emoji" style="width:${sizePx}px;height:${sizePx}px;font-size:${Math.round(sizePx*0.62)}px;">${p.avatar}</span>`;
+    return '';
+  }
+
+  function refreshDependents(){
+    renderPool();
+    renderIdentitySelect();
+    renderCaptainSelects();
+    renderDraftBoard();
+    syncTeamsFromDraft();
+    queueSave();
+  }
+
+  function renderPlayersTab(){
+    const el = document.getElementById('playerCards');
+    el.innerHTML = '';
+    state.pool.forEach((p, i)=>{
+      const card = document.createElement('div');
+      card.className = 'player-card';
+      card.innerHTML = `
+        <div class="pc-top">
+          <button class="pc-avatar-btn" data-idx="${i}">${avatarInnerHtml(p)}</button>
+          <div class="pc-fields">
+            <p class="pc-label">Name</p>
+            <div class="pc-row"><input type="text" class="pc-name" data-idx="${i}" data-field="name" value="${escapeHtml(p.name)}"></div>
+            <p class="pc-label">Nickname (optional)</p>
+            <div class="pc-row">
+              <input type="text" data-idx="${i}" data-field="nickname" placeholder="e.g. The Hammer" value="${escapeHtml(p.nickname)}">
+              <div class="pc-hc-wrap">
+                <span class="pc-label">HC</span>
+                <input type="number" min="0" max="54" data-idx="${i}" data-field="hc" value="${p.hc}">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="emoji-picker" id="emojiPicker-${i}">
+          <div class="photo-actions">
+            <label class="photo-upload-btn">
+              📷 ${p.photo ? 'Replace Photo' : 'Upload Photo'}
+              <input type="file" accept="image/*" class="photo-input" data-idx="${i}" hidden>
+            </label>
+            ${p.photo ? `<button class="photo-remove-btn" data-idx="${i}">Remove</button>` : ''}
+          </div>
+          <div class="emoji-grid">
+            ${AVATAR_EMOJIS.map(e=>`<button data-idx="${i}" data-emoji="${e}">${e}</button>`).join('')}
+          </div>
+        </div>
+      `;
+      el.appendChild(card);
+    });
+
+    el.querySelectorAll('.pc-avatar-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const picker = document.getElementById('emojiPicker-' + btn.dataset.idx);
+        const isOpen = picker.classList.contains('show');
+        el.querySelectorAll('.emoji-picker').forEach(p=>p.classList.remove('show'));
+        if(!isOpen) picker.classList.add('show');
+      });
+    });
+    el.querySelectorAll('.emoji-grid button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const idx = parseInt(btn.dataset.idx,10);
+        state.pool[idx].avatar = btn.dataset.emoji;
+        state.pool[idx].photo = ''; // emoji and photo are mutually exclusive
+        renderPlayersTab();
+        refreshDependents();
+      });
+    });
+    el.querySelectorAll('.photo-input').forEach(inp=>{
+      inp.addEventListener('change', async ()=>{
+        const idx = parseInt(inp.dataset.idx,10);
+        const file = inp.files && inp.files[0];
+        if(!file) return;
+        flashSavePill('Processing photo…');
+        try{
+          const dataUrl = await compressImageFile(file, 160, 0.72);
+          state.pool[idx].photo = dataUrl;
+          renderPlayersTab();
+          refreshDependents();
+          flashSavePill('Photo saved');
+        }catch(e){
+          flashSavePill('Could not use that photo');
+        }
+      });
+    });
+    el.querySelectorAll('.photo-remove-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const idx = parseInt(btn.dataset.idx,10);
+        state.pool[idx].photo = '';
+        renderPlayersTab();
+        refreshDependents();
+      });
+    });
+    el.querySelectorAll('input[type=text]').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        const idx = parseInt(inp.dataset.idx,10), field = inp.dataset.field;
+        state.pool[idx][field] = inp.value;
+        refreshDependents();
+      });
+    });
+    el.querySelectorAll('input[type=number]').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        const idx = parseInt(inp.dataset.idx,10);
+        let v = parseInt(inp.value,10);
+        if(isNaN(v)) v = 0;
+        v = Math.max(0, Math.min(54, v));
+        state.pool[idx].hc = v;
+        refreshDependents();
+      });
+    });
   }
 
   // ================= ROSTER =================
@@ -1887,7 +2377,7 @@
       const row = document.createElement('div');
       row.className = 'player-row';
       row.innerHTML = `
-        <span class="idx">${i+1}</span>
+        <span class="idx">${smallAvatarHtml(p, 24) || (i+1)}</span>
         <input type="text" value="${escapeHtml(p.name)}" data-key="${key}" data-idx="${i}" data-field="name">
         <div class="hc-wrap">
           <input type="number" value="${p.hc}" min="0" max="54" data-key="${key}" data-idx="${i}" data-field="hc">
@@ -1994,7 +2484,17 @@
 
   function nameAt(key, idx){
     const arr = state[key];
-    return (arr[idx] && arr[idx].name) ? arr[idx].name : ('TBD');
+    if(!arr[idx] || !arr[idx].name) return 'TBD';
+    const avatar = arr[idx].avatar ? arr[idx].avatar + ' ' : '';
+    return avatar + arr[idx].name;
+  }
+
+  // Same as nameAt but without the emoji-in-text prefix — for use anywhere
+  // a real avatar badge (image or emoji) is shown alongside it instead,
+  // so the avatar doesn't appear twice.
+  function rawNameAt(key, idx){
+    const arr = state[key];
+    return (arr[idx] && arr[idx].name) ? arr[idx].name : 'TBD';
   }
 
   function fmtPts(n){
@@ -2122,9 +2622,11 @@
     state.picks.r1 = totals.decided ? totals.winner : null;
 
     function stepperRow(team, i){
-      const name = nameAt(team, i);
+      const p = state[team][i];
+      const name = (p && p.name) ? p.name : 'TBD';
       const val = hs[team][i][idx];
-      return stepperHtml(name, val, `${team}-${i}`);
+      const locked = p ? !canEditPlayer(p.poolIdx) : false;
+      return stepperHtml(name, val, `${team}-${i}`, false, smallAvatarHtml(p, 26), locked);
     }
 
     let cols = `<div><p class="hin-team-label a">${escapeHtml(state.teamAName)}</p>`;
@@ -2213,13 +2715,13 @@
     document.getElementById(ptsId).textContent = fmtPts(a) + '–' + fmtPts(b);
   }
 
-  function stepperHtml(label, val, fieldId, big){
-    return `<div class="stroke-stepper${big?' big':''}" data-field="${fieldId}">
-      <span class="ss-name">${escapeHtml(label)}</span>
+  function stepperHtml(label, val, fieldId, big, avatarHtml, locked){
+    return `<div class="stroke-stepper${big?' big':''}${locked?' locked':''}" data-field="${fieldId}">
+      <span class="ss-name">${avatarHtml||''}${escapeHtml(label)}</span>
       <div class="ss-controls">
-        <button class="ss-btn" data-field="${fieldId}" data-dir="-1" aria-label="minus">–</button>
+        <button class="ss-btn" data-field="${fieldId}" data-dir="-1" aria-label="minus" ${locked?'disabled':''}>–</button>
         <span class="ss-value">${val===null?'–':val}</span>
-        <button class="ss-btn" data-field="${fieldId}" data-dir="1" aria-label="plus">+</button>
+        <button class="ss-btn" data-field="${fieldId}" data-dir="1" aria-label="plus" ${locked?'disabled':''}>+</button>
       </div>
     </div>`;
   }
@@ -2326,7 +2828,7 @@
     return status;
   }
 
-  function renderSingleMatchScoring(container, matchData, holeRef, aLabel, bLabel, allocA, allocB, hcBadge, onCommit, onAdvance){
+  function renderSingleMatchScoring(container, matchData, holeRef, aLabel, bLabel, allocA, allocB, hcBadge, onCommit, onAdvance, aAvatar, bAvatar, locked){
     const hole = holeRef.value;
     const idx = hole - 1;
     const resultsArr = deriveSingleSideResults(matchData.teamA, matchData.teamB, allocA, allocB);
@@ -2339,18 +2841,19 @@
         return v==='a'?'dot-a': v==='b'?'dot-b': v==='tie'?'dot-tie':'dot-empty';
       }, hole)}
       <p class="hole-label"><span class="hl-num">HOLE ${hole}</span><span class="hl-of">OF 18</span></p>
-      <div class="hole-input-grid" style="grid-template-columns:1fr 1fr;">
-        <div>${stepperHtml(aLabel, matchData.teamA[idx], 'teamA', true)}</div>
-        <div>${stepperHtml(bLabel, matchData.teamB[idx], 'teamB', true)}</div>
+      <div class="hole-input-grid" style="grid-template-columns:1fr;">
+        ${stepperHtml(aLabel, matchData.teamA[idx], 'teamA', true, aAvatar, locked)}
+        ${stepperHtml(bLabel, matchData.teamB[idx], 'teamB', true, bAvatar, locked)}
       </div>
       ${hcBadge ? `<p class="team-hc-badge">${hcBadge}</p>` : ''}
+      ${locked ? `<p class="lock-note">🔒 Only players in this match can edit — switch to Scorekeeper in the bar up top if needed</p>` : ''}
       <div class="advance-pill" style="display:none;"><span class="ap-bar"><span class="ap-bar-fill"></span></span><span class="ap-text"></span></div>
     `;
 
     container.querySelectorAll('.hole-dot').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         holeRef.value = parseInt(btn.dataset.hole,10);
-        renderSingleMatchScoring(container, matchData, holeRef, aLabel, bLabel, allocA, allocB, hcBadge, onCommit, onAdvance);
+        renderSingleMatchScoring(container, matchData, holeRef, aLabel, bLabel, allocA, allocB, hcBadge, onCommit, onAdvance, aAvatar, bAvatar, locked);
       });
     });
 
@@ -2415,7 +2918,7 @@
     return status;
   }
 
-  function renderBestBallScoring(container, matchData, holeRef, aNames, bNames, allocsA, allocsB, hcBadge, onCommit, onAdvance){
+  function renderBestBallScoring(container, matchData, holeRef, aNames, bNames, aAvatars, bAvatars, allocsA, allocsB, hcBadge, onCommit, onAdvance, locked){
     const hole = holeRef.value;
     const idx = hole - 1;
     const resultsArr = deriveBestBallResults(matchData, allocsA, allocsB);
@@ -2429,17 +2932,18 @@
       }, hole)}
       <p class="hole-label"><span class="hl-num">HOLE ${hole}</span><span class="hl-of">OF 18</span></p>
       <div class="hole-input-grid">
-        <div>${stepperHtml(aNames[0], matchData.teamA[0][idx], 'teamA-0')}${stepperHtml(aNames[1], matchData.teamA[1][idx], 'teamA-1')}</div>
-        <div>${stepperHtml(bNames[0], matchData.teamB[0][idx], 'teamB-0')}${stepperHtml(bNames[1], matchData.teamB[1][idx], 'teamB-1')}</div>
+        <div>${stepperHtml(aNames[0], matchData.teamA[0][idx], 'teamA-0', false, aAvatars[0], locked)}${stepperHtml(aNames[1], matchData.teamA[1][idx], 'teamA-1', false, aAvatars[1], locked)}</div>
+        <div>${stepperHtml(bNames[0], matchData.teamB[0][idx], 'teamB-0', false, bAvatars[0], locked)}${stepperHtml(bNames[1], matchData.teamB[1][idx], 'teamB-1', false, bAvatars[1], locked)}</div>
       </div>
       ${hcBadge ? `<p class="team-hc-badge">${hcBadge}</p>` : ''}
+      ${locked ? `<p class="lock-note">🔒 Only players in this match can edit — switch to Scorekeeper in the bar up top if needed</p>` : ''}
       <div class="advance-pill" style="display:none;"><span class="ap-bar"><span class="ap-bar-fill"></span></span><span class="ap-text"></span></div>
     `;
 
     container.querySelectorAll('.hole-dot').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         holeRef.value = parseInt(btn.dataset.hole,10);
-        renderBestBallScoring(container, matchData, holeRef, aNames, bNames, allocsA, allocsB, hcBadge, onCommit, onAdvance);
+        renderBestBallScoring(container, matchData, holeRef, aNames, bNames, aAvatars, bAvatars, allocsA, allocsB, hcBadge, onCommit, onAdvance, locked);
       });
     });
 
@@ -2477,6 +2981,10 @@
     pairIdxs.forEach((pair, mi)=>{
       const aNames = pair.map(i=>nameAt('teamA', i));
       const bNames = pair.map(i=>nameAt('teamB', i));
+      const aRawNames = pair.map(i=>rawNameAt('teamA', i));
+      const bRawNames = pair.map(i=>rawNameAt('teamB', i));
+      const aAvatars = pair.map(i=>smallAvatarHtml(state.teamA[i], 24));
+      const bAvatars = pair.map(i=>smallAvatarHtml(state.teamB[i], 24));
       const wrap = document.createElement('div');
       wrap.className = 'match-block';
       wrap.innerHTML = `<p class="match-names"><span class="mn-a">${escapeHtml(aNames.join(' / '))}</span><span class="mn-vs">vs</span><span class="mn-b">${escapeHtml(bNames.join(' / '))}</span></p><div class="match-scoring"></div>`;
@@ -2490,6 +2998,8 @@
       const allocsA = hcA.map(hc => (h)=>strokesOnHole(hc, h));
       const allocsB = hcB.map(hc => (h)=>strokesOnHole(hc, h));
       const hcBadge = `Best ball, full individual handicap &middot; ${escapeHtml(aNames[0])} ${hcA[0]} / ${escapeHtml(aNames[1])} ${hcA[1]} &nbsp;vs&nbsp; ${escapeHtml(bNames[0])} ${hcB[0]} / ${escapeHtml(bNames[1])} ${hcB[1]}`;
+      const participants = pair.map(i=>(state.teamA[i]||{}).poolIdx).concat(pair.map(i=>(state.teamB[i]||{}).poolIdx));
+      const locked = !canEditMatch(participants);
 
       let onCommitFn, onAdvanceFn;
       onCommitFn = (liveStatus)=>{
@@ -2499,9 +3009,9 @@
         queueSave();
       };
       onAdvanceFn = ()=>{
-        renderBestBallScoring(scoringDiv, matchData, holeRef, aNames, bNames, allocsA, allocsB, hcBadge, onCommitFn, onAdvanceFn);
+        renderBestBallScoring(scoringDiv, matchData, holeRef, aRawNames, bRawNames, aAvatars, bAvatars, allocsA, allocsB, hcBadge, onCommitFn, onAdvanceFn, locked);
       };
-      const status = renderBestBallScoring(scoringDiv, matchData, holeRef, aNames, bNames, allocsA, allocsB, hcBadge, onCommitFn, onAdvanceFn);
+      const status = renderBestBallScoring(scoringDiv, matchData, holeRef, aRawNames, bRawNames, aAvatars, bAvatars, allocsA, allocsB, hcBadge, onCommitFn, onAdvanceFn, locked);
       state.picks[roundKey][mi] = status.decided ? status.winner : null;
     });
     updateRoundPtsTally(ptsId, roundKey);
@@ -2530,6 +3040,8 @@
       const hcBadge = diff===0
         ? `Combined team handicap &middot; ${escapeHtml(state.teamAName)} ${hcA} = ${escapeHtml(state.teamBName)} ${hcB} &middot; playing scratch`
         : `Combined team handicap &middot; ${escapeHtml(state.teamAName)} ${hcA} vs ${escapeHtml(state.teamBName)} ${hcB} &middot; ${escapeHtml(higherIsA?state.teamAName:state.teamBName)} gets <b>${diff}</b> stroke${diff===1?'':'s'}`;
+      const participants = [pair[0], pair[1]].map(i=>(state.teamA[i]||{}).poolIdx).concat([pair[0], pair[1]].map(i=>(state.teamB[i]||{}).poolIdx));
+      const locked = !canEditMatch(participants);
 
       let onCommitFn, onAdvanceFn;
       onCommitFn = (liveStatus)=>{
@@ -2539,9 +3051,9 @@
         queueSave();
       };
       onAdvanceFn = ()=>{
-        renderSingleMatchScoring(scoringDiv, matchData, holeRef, aNames, bNames, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn);
+        renderSingleMatchScoring(scoringDiv, matchData, holeRef, aNames, bNames, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn, undefined, undefined, locked);
       };
-      const status = renderSingleMatchScoring(scoringDiv, matchData, holeRef, aNames, bNames, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn);
+      const status = renderSingleMatchScoring(scoringDiv, matchData, holeRef, aNames, bNames, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn, undefined, undefined, locked);
       state.picks[roundKey][mi] = status.decided ? status.winner : null;
     });
     updateRoundPtsTally(ptsId, roundKey);
@@ -2553,6 +3065,10 @@
     for(let i=0;i<4;i++){
       const aName = nameAt('teamA', i);
       const bName = nameAt('teamB', i);
+      const aRawName = rawNameAt('teamA', i);
+      const bRawName = rawNameAt('teamB', i);
+      const aAvatar = smallAvatarHtml(state.teamA[i], 26);
+      const bAvatar = smallAvatarHtml(state.teamB[i], 26);
       const wrap = document.createElement('div');
       wrap.className = 'match-block';
       wrap.innerHTML = `<p class="match-names"><span class="mn-a">${escapeHtml(aName)}</span><span class="mn-vs">vs</span><span class="mn-b">${escapeHtml(bName)}</span></p><div class="match-scoring"></div>`;
@@ -2570,6 +3086,8 @@
       const hcBadge = diff===0
         ? `Even handicaps &middot; playing scratch against each other`
         : `${escapeHtml(higherIsA ? aName : bName)} gets <b>${diff}</b> stroke${diff===1?'':'s'} (handicap difference)`;
+      const participants = [(state.teamA[i]||{}).poolIdx, (state.teamB[i]||{}).poolIdx];
+      const locked = !canEditMatch(participants);
 
       let onCommitFn, onAdvanceFn;
       onCommitFn = (liveStatus)=>{
@@ -2579,9 +3097,9 @@
         queueSave();
       };
       onAdvanceFn = ()=>{
-        renderSingleMatchScoring(scoringDiv, matchData, holeRef, aName, bName, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn);
+        renderSingleMatchScoring(scoringDiv, matchData, holeRef, aRawName, bRawName, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn, aAvatar, bAvatar, locked);
       };
-      const status = renderSingleMatchScoring(scoringDiv, matchData, holeRef, aName, bName, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn);
+      const status = renderSingleMatchScoring(scoringDiv, matchData, holeRef, aRawName, bRawName, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn, aAvatar, bAvatar, locked);
       state.picks[roundKey][i] = status.decided ? status.winner : null;
     }
     updateRoundPtsTally(ptsId, roundKey);
@@ -2595,6 +3113,89 @@
     updateScoreboard();
   }
 
+  // ================= OVERVIEW (all matches at a glance) =================
+
+  function ovRow(sectionLabel, names, statusObj, targetView){
+    const row = document.createElement('div');
+    const decided = statusObj.decided;
+    row.className = 'ov-row' + (decided ? ' decided' : '');
+    let leadClass = 'lead-tie';
+    if(statusObj.diff > 0) leadClass = 'lead-a';
+    else if(statusObj.diff < 0) leadClass = 'lead-b';
+    if(decided && statusObj.winner==='tie') leadClass = 'lead-tie';
+    row.innerHTML = `
+      <div class="ov-meta">
+        <span class="ov-round">${escapeHtml(sectionLabel)}</span>
+        <span class="ov-names">${escapeHtml(names)}</span>
+      </div>
+      <span class="ov-status ${leadClass}">${escapeHtml(statusObj.label)}</span>
+    `;
+    row.addEventListener('click', ()=>{
+      const btn = document.querySelector(`nav.tabs button[data-view="${targetView}"]`);
+      if(btn) btn.click();
+    });
+    return row;
+  }
+
+  function renderOverview(){
+    const el = document.getElementById('overviewList');
+    if(!el) return;
+    el.innerHTML = '';
+
+    // Round 1 — stroke play, adapt its shape to match the {label,decided,winner,diff} contract.
+    const r1 = computeStrokePlayTotals();
+    const r1Diff = (r1.aDisplay!=='–' && r1.bDisplay!=='–') ? (parseFloat(r1.bDisplay) - parseFloat(r1.aDisplay)) : 0;
+    const r1Status = {
+      decided: r1.decided,
+      winner: r1.winner,
+      diff: r1Diff,
+      label: !r1.decided && r1.minThru===0 ? 'NOT STARTED'
+        : r1.decided ? (r1.winner==='tie' ? 'HALVED' : (r1.winner==='a'?'TEAM A':'TEAM B') + ' WINS')
+        : `THRU ${r1.minThru}`
+    };
+    el.appendChild(ovRow('Round 1 · Stroke Play', `${state.teamAName} vs ${state.teamBName}`, r1Status, 'r1'));
+
+    // Round 2 — best ball
+    [[0,1],[2,3]].forEach((pair, mi)=>{
+      const matchData = state.holeScores.r2[mi];
+      const allocsA = pair.map(i => { const hc = Number((state.teamA[i]||{}).hc)||0; return (h)=>strokesOnHole(hc,h); });
+      const allocsB = pair.map(i => { const hc = Number((state.teamB[i]||{}).hc)||0; return (h)=>strokesOnHole(hc,h); });
+      const status = computeMatchStatus(deriveBestBallResults(matchData, allocsA, allocsB));
+      const names = pair.map(i=>nameAt('teamA',i)).join('/') + ' vs ' + pair.map(i=>nameAt('teamB',i)).join('/');
+      el.appendChild(ovRow('Round 2 · Best Ball', names, status, 'r2'));
+    });
+
+    // Round 3 — alt shot
+    [[0,1],[2,3]].forEach((pair, mi)=>{
+      const matchData = state.holeScores.r3[mi];
+      const hcA = pairCombinedHc('teamA', pair[0], pair[1]);
+      const hcB = pairCombinedHc('teamB', pair[0], pair[1]);
+      const diff = Math.abs(hcA-hcB), higherIsA = hcA>hcB;
+      const allocA = (h)=> higherIsA ? strokesOnHole(diff,h) : 0;
+      const allocB = (h)=> higherIsA ? 0 : strokesOnHole(diff,h);
+      const status = computeMatchStatus(deriveSingleSideResults(matchData.teamA, matchData.teamB, allocA, allocB));
+      const names = pair.map(i=>nameAt('teamA',i)).join('/') + ' vs ' + pair.map(i=>nameAt('teamB',i)).join('/');
+      el.appendChild(ovRow('Round 3 · Alt Shot', names, status, 'r3'));
+    });
+
+    // Round 4 — singles
+    for(let i=0;i<4;i++){
+      const matchData = state.holeScores.r4[i];
+      const hcA = Number((state.teamA[i]||{}).hc)||0;
+      const hcB = Number((state.teamB[i]||{}).hc)||0;
+      const diff = Math.abs(hcA-hcB), higherIsA = hcA>hcB;
+      const allocA = (h)=> higherIsA ? strokesOnHole(diff,h) : 0;
+      const allocB = (h)=> higherIsA ? 0 : strokesOnHole(diff,h);
+      const status = computeMatchStatus(deriveSingleSideResults(matchData.teamA, matchData.teamB, allocA, allocB));
+      const names = `${nameAt('teamA',i)} vs ${nameAt('teamB',i)}`;
+      el.appendChild(ovRow('Round 4 · Singles', names, status, 'r4'));
+    }
+
+    const totalDecided = el.querySelectorAll('.ov-row.decided').length;
+    const summary = document.getElementById('overviewSummary');
+    if(summary) summary.textContent = `${totalDecided} of 9 scoring units decided — tap any match to jump straight to it.`;
+  }
+
   function updateScoreboard(){
     let a = 0, b = 0;
     if(state.picks.r1==='a') a+=1;
@@ -2606,6 +3207,7 @@
     });
     document.getElementById('teamAScore').textContent = fmtPts(a);
     document.getElementById('teamBScore').textContent = fmtPts(b);
+    renderOverview();
   }
 
   // ================= RESET / INIT =================
@@ -2618,6 +3220,8 @@
 
   function renderAll(){
     renderPool();
+    renderPlayersTab();
+    renderIdentitySelect();
     renderCaptainSelects();
     renderDraftBoard();
     renderRoster();

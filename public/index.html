@@ -879,6 +879,37 @@
     margin:10px 16px 8px;
     animation:hole-fade-in 320ms ease;
   }
+
+  .advance-pill{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:0 16px 14px;
+    padding:7px 10px;
+    background:var(--paper-dim);
+    border:1px solid var(--gold);
+    border-radius:20px;
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .ap-bar{
+    flex:0 0 auto;
+    width:44px;
+    height:4px;
+    border-radius:2px;
+    background:rgba(200,162,75,0.25);
+    overflow:hidden;
+  }
+  .ap-bar-fill{
+    display:block;
+    height:100%;
+    width:100%;
+    background:var(--gold);
+  }
+  .ap-text{flex:1;}
+  .ap-text b{color:var(--fairway);}
   .hole-label .hl-num{
     font-family:'Anton',sans-serif;
     font-size:26px;
@@ -2107,6 +2138,7 @@
       ${holeStripHtml(holeCompletenessClass, hole)}
       <p class="hole-label"><span class="hl-num">HOLE ${hole}</span><span class="hl-of">OF 18</span></p>
       <div class="hole-input-grid">${cols}</div>
+      <div class="advance-pill" style="display:none;"><span class="ap-bar"><span class="ap-bar-fill"></span></span><span class="ap-text"></span></div>
     `;
 
     container.querySelectorAll('.hole-dot').forEach(btn=>{
@@ -2125,21 +2157,21 @@
         };
       }
     });
-    let advanceTimer = null;
+    const advanceCtl = createAdvanceController(container, `Hole ${hole+1}`, ()=>{
+      selectedHole.r1 = hole + 1;
+      renderRound1();
+    });
     wireSteppers(container, fields, ()=>{
       updateRound1Live();
       updateScoreboard();
       queueSave();
 
-      // Once every player has a score for this hole, glide to the next one.
-      // Debounced: each qualifying tap resets the timer so a burst of taps
-      // (or a slow, thoughtful one) doesn't get yanked to the next hole mid-entry.
-      clearTimeout(advanceTimer);
+      // Once every player has a score for this hole, start the countdown.
+      // Any further tap on a stepper restarts it; tapping elsewhere cancels.
       if(round1HoleComplete(idx) && hole < 18){
-        advanceTimer = setTimeout(()=>{
-          selectedHole.r1 = hole + 1;
-          renderRound1();
-        }, 450);
+        advanceCtl.trigger();
+      } else {
+        advanceCtl.cancel();
       }
     });
 
@@ -2214,6 +2246,55 @@
     });
   }
 
+  const ADVANCE_DELAY_MS = 1800;
+
+  // Manages the "everyone's in, advancing soon" countdown for one hole
+  // panel. Shows a pill with a shrinking bar; any tap on the panel that
+  // ISN'T a stepper button cancels it outright. A stepper tap (still
+  // adjusting a score) restarts the countdown instead of firing early.
+  function createAdvanceController(container, nextLabel, onFire){
+    let timer = null;
+    const pill = container.querySelector('.advance-pill');
+    if(!pill) return { trigger(){}, cancel(){} };
+    const fill = pill.querySelector('.ap-bar-fill');
+    const text = pill.querySelector('.ap-text');
+
+    function cancel(){
+      clearTimeout(timer);
+      timer = null;
+      pill.style.display = 'none';
+      fill.style.transition = 'none';
+      fill.style.width = '100%';
+    }
+
+    function trigger(){
+      clearTimeout(timer);
+      pill.style.display = 'flex';
+      text.innerHTML = `Moving to <b>${nextLabel}</b> — tap to stay here`;
+      fill.style.transition = 'none';
+      fill.style.width = '100%';
+      // Force reflow so the transition below actually animates from 100%.
+      void fill.offsetWidth;
+      fill.style.transition = `width ${ADVANCE_DELAY_MS}ms linear`;
+      fill.style.width = '0%';
+      timer = setTimeout(()=>{
+        pill.style.display = 'none';
+        onFire();
+      }, ADVANCE_DELAY_MS);
+    }
+
+    // Tapping anywhere on the panel other than a stepper button cancels.
+    container.addEventListener('click', (e)=>{
+      if(timer && !e.target.closest('.ss-btn')){
+        cancel();
+      }
+    });
+    // Tapping the pill itself also cancels (it's the obvious "stay" target).
+    pill.addEventListener('click', (e)=>{ e.stopPropagation(); cancel(); });
+
+    return { trigger, cancel };
+  }
+
   // ---- Round 3 & 4: one gross score per side per hole ----
 
   function deriveSingleSideResults(teamAArr, teamBArr, allocA, allocB){
@@ -2263,6 +2344,7 @@
         <div>${stepperHtml(bLabel, matchData.teamB[idx], 'teamB', true)}</div>
       </div>
       ${hcBadge ? `<p class="team-hc-badge">${hcBadge}</p>` : ''}
+      <div class="advance-pill" style="display:none;"><span class="ap-bar"><span class="ap-bar-fill"></span></span><span class="ap-text"></span></div>
     `;
 
     container.querySelectorAll('.hole-dot').forEach(btn=>{
@@ -2276,14 +2358,18 @@
       teamA: { get: ()=> matchData.teamA[idx], set: (v)=> { matchData.teamA[idx] = v; } },
       teamB: { get: ()=> matchData.teamB[idx], set: (v)=> { matchData.teamB[idx] = v; } }
     };
-    let advanceTimer = null;
+    const advanceCtl = createAdvanceController(container, `Hole ${hole+1}`, ()=>{
+      holeRef.value = hole+1;
+      onAdvance();
+    });
     wireSteppers(container, fields, ()=>{
       const liveStatus = updateSingleMatchStatusUI(container, matchData, allocA, allocB);
       onCommit(liveStatus);
-      clearTimeout(advanceTimer);
       const bothFilled = matchData.teamA[idx]!==null && matchData.teamB[idx]!==null;
       if(bothFilled && hole < 18){
-        advanceTimer = setTimeout(()=>{ holeRef.value = hole+1; onAdvance(); }, 450);
+        advanceCtl.trigger();
+      } else {
+        advanceCtl.cancel();
       }
     });
 
@@ -2293,12 +2379,14 @@
   // ---- Round 2: two gross scores per side per hole (best ball) ----
 
   function bestBallNet(playerArrs, allocs, h){
-    const nets = [];
-    for(let p=0;p<2;p++){
-      const g = playerArrs[p][h-1];
-      if(g!==null) nets.push(g - allocs[p](h));
-    }
-    return nets.length ? Math.min(...nets) : null;
+    const idx = h - 1;
+    const g0 = playerArrs[0][idx], g1 = playerArrs[1][idx];
+    // Require BOTH partners' scores before this side counts for the hole —
+    // otherwise a hole reads as "decided" while someone's still mid-entry.
+    if(g0===null || g1===null) return null;
+    const n0 = g0 - allocs[0](h);
+    const n1 = g1 - allocs[1](h);
+    return Math.min(n0, n1);
   }
 
   function deriveBestBallResults(matchData, allocsA, allocsB){
@@ -2345,6 +2433,7 @@
         <div>${stepperHtml(bNames[0], matchData.teamB[0][idx], 'teamB-0')}${stepperHtml(bNames[1], matchData.teamB[1][idx], 'teamB-1')}</div>
       </div>
       ${hcBadge ? `<p class="team-hc-badge">${hcBadge}</p>` : ''}
+      <div class="advance-pill" style="display:none;"><span class="ap-bar"><span class="ap-bar-fill"></span></span><span class="ap-text"></span></div>
     `;
 
     container.querySelectorAll('.hole-dot').forEach(btn=>{
@@ -2363,15 +2452,19 @@
         };
       });
     });
-    let advanceTimer = null;
+    const advanceCtl = createAdvanceController(container, `Hole ${hole+1}`, ()=>{
+      holeRef.value = hole+1;
+      onAdvance();
+    });
     wireSteppers(container, fields, ()=>{
       const liveStatus = updateBestBallStatusUI(container, matchData, allocsA, allocsB);
       onCommit(liveStatus);
-      clearTimeout(advanceTimer);
-      const bothSidesReady = (matchData.teamA[0][idx]!==null || matchData.teamA[1][idx]!==null)
-        && (matchData.teamB[0][idx]!==null || matchData.teamB[1][idx]!==null);
-      if(bothSidesReady && hole < 18){
-        advanceTimer = setTimeout(()=>{ holeRef.value = hole+1; onAdvance(); }, 450);
+      const allFourFilled = matchData.teamA[0][idx]!==null && matchData.teamA[1][idx]!==null
+        && matchData.teamB[0][idx]!==null && matchData.teamB[1][idx]!==null;
+      if(allFourFilled && hole < 18){
+        advanceCtl.trigger();
+      } else {
+        advanceCtl.cancel();
       }
     });
 

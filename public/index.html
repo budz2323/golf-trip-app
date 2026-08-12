@@ -928,32 +928,63 @@
   }
   .hin-team-label.a{color:var(--fairway);}
   .hin-team-label.b{color:var(--pin-red);}
-  .hole-input-row{
+
+  .stroke-stepper{
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:6px;
-    padding:5px 0;
+    padding:6px 0;
     border-bottom:1px solid var(--line);
   }
-  .hin-name{
+  .ss-name{
     font-size:12.5px;
     font-weight:500;
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
+    flex:1;
   }
-  .hin-score{
-    width:48px;
-    padding:6px 4px;
-    text-align:center;
-    border:1px solid var(--line);
-    border-radius:5px;
-    font-family:'Space Mono',monospace;
-    font-size:13px;
+  .ss-controls{
+    display:flex;
+    align-items:center;
+    gap:2px;
+    flex:0 0 auto;
+  }
+  .ss-btn{
+    width:26px; height:26px;
+    border-radius:50%;
+    border:1.5px solid var(--fairway);
     background:#fff;
+    color:var(--fairway);
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
   }
-  .hin-score:focus{outline:none; border-color:var(--gold);}
+  .ss-btn:active{background:var(--fairway); color:var(--paper);}
+  .ss-value{
+    width:28px;
+    text-align:center;
+    font-family:'Anton',sans-serif;
+    font-size:17px;
+    color:var(--ink);
+  }
+  /* Bigger variant for match play (fewer, more prominent entries) */
+  .stroke-stepper.big{
+    padding:10px 0;
+  }
+  .stroke-stepper.big .ss-name{font-size:14.5px; font-weight:600;}
+  .stroke-stepper.big .ss-btn{width:34px; height:34px; font-size:18px;}
+  .stroke-stepper.big .ss-value{width:36px; font-size:22px;}
+
   .match-block{
     margin-bottom:6px;
   }
@@ -2059,19 +2090,16 @@
     const {html: bannerHtml, totals} = round1BannerHtml();
     state.picks.r1 = totals.decided ? totals.winner : null;
 
-    function inputRow(team, i){
+    function stepperRow(team, i){
       const name = nameAt(team, i);
       const val = hs[team][i][idx];
-      return `<div class="hole-input-row">
-        <span class="hin-name">${escapeHtml(name)}</span>
-        <input type="number" min="1" max="15" inputmode="numeric" class="hin-score" data-team="${team}" data-pidx="${i}" value="${val===null?'':val}" placeholder="–">
-      </div>`;
+      return stepperHtml(name, val, `${team}-${i}`);
     }
 
     let cols = `<div><p class="hin-team-label a">${escapeHtml(state.teamAName)}</p>`;
-    for(let i=0;i<4;i++) cols += inputRow('teamA', i);
+    for(let i=0;i<4;i++) cols += stepperRow('teamA', i);
     cols += `</div><div><p class="hin-team-label b">${escapeHtml(state.teamBName)}</p>`;
-    for(let i=0;i<4;i++) cols += inputRow('teamB', i);
+    for(let i=0;i<4;i++) cols += stepperRow('teamB', i);
     cols += `</div>`;
 
     container.innerHTML = `
@@ -2087,23 +2115,32 @@
         renderRound1();
       });
     });
-    container.querySelectorAll('.hin-score').forEach(inp=>{
-      inp.addEventListener('change', ()=>{
-        const team = inp.dataset.team, pidx = parseInt(inp.dataset.pidx,10);
-        const v = inp.value === '' ? null : Math.max(1, Math.min(15, parseInt(inp.value,10)||0));
-        state.holeScores.r1[team][pidx][idx] = v;
-        updateRound1Live();
-        updateScoreboard();
-        queueSave();
 
-        // Once every player has a score for this hole, glide to the next one.
-        if(v !== null && round1HoleComplete(idx) && hole < 18){
-          setTimeout(()=>{
-            selectedHole.r1 = hole + 1;
-            renderRound1();
-          }, 450);
-        }
-      });
+    const fields = {};
+    ['teamA','teamB'].forEach(team=>{
+      for(let i=0;i<4;i++){
+        fields[`${team}-${i}`] = {
+          get: ()=> hs[team][i][idx],
+          set: (v)=> { hs[team][i][idx] = v; }
+        };
+      }
+    });
+    let advanceTimer = null;
+    wireSteppers(container, fields, ()=>{
+      updateRound1Live();
+      updateScoreboard();
+      queueSave();
+
+      // Once every player has a score for this hole, glide to the next one.
+      // Debounced: each qualifying tap resets the timer so a burst of taps
+      // (or a slow, thoughtful one) doesn't get yanked to the next hole mid-entry.
+      clearTimeout(advanceTimer);
+      if(round1HoleComplete(idx) && hole < 18){
+        advanceTimer = setTimeout(()=>{
+          selectedHole.r1 = hole + 1;
+          renderRound1();
+        }, 450);
+      }
     });
 
     const {a, b} = tallyPicks([state.picks.r1]);
@@ -2144,11 +2181,37 @@
     document.getElementById(ptsId).textContent = fmtPts(a) + '–' + fmtPts(b);
   }
 
-  function scoreInputHtml(label, val, dataAttrs){
-    return `<div class="hole-input-row">
-      <span class="hin-name">${escapeHtml(label)}</span>
-      <input type="number" min="1" max="15" inputmode="numeric" class="hin-score" ${dataAttrs} value="${val===null?'':val}" placeholder="–">
+  function stepperHtml(label, val, fieldId, big){
+    return `<div class="stroke-stepper${big?' big':''}" data-field="${fieldId}">
+      <span class="ss-name">${escapeHtml(label)}</span>
+      <div class="ss-controls">
+        <button class="ss-btn" data-field="${fieldId}" data-dir="-1" aria-label="minus">–</button>
+        <span class="ss-value">${val===null?'–':val}</span>
+        <button class="ss-btn" data-field="${fieldId}" data-dir="1" aria-label="plus">+</button>
+      </div>
     </div>`;
+  }
+
+  // Wires every .ss-btn inside `container`. `fields` maps fieldId -> {get, set}.
+  // Each tap updates the state value directly and patches just that one
+  // number on screen (no re-render, so nothing else can shift underneath
+  // a fast double-tap) then calls onChange(fieldId) for the caller to
+  // refresh status/points/save.
+  function wireSteppers(container, fields, onChange){
+    container.querySelectorAll('.ss-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const fid = btn.dataset.field;
+        const dir = parseInt(btn.dataset.dir,10);
+        const f = fields[fid];
+        if(!f) return;
+        let v = f.get();
+        v = (v===null) ? 4 : Math.max(1, Math.min(15, v+dir));
+        f.set(v);
+        const valEl = container.querySelector(`.stroke-stepper[data-field="${fid}"] .ss-value`);
+        if(valEl) valEl.textContent = v;
+        onChange(fid);
+      });
+    });
   }
 
   // ---- Round 3 & 4: one gross score per side per hole ----
@@ -2196,8 +2259,8 @@
       }, hole)}
       <p class="hole-label"><span class="hl-num">HOLE ${hole}</span><span class="hl-of">OF 18</span></p>
       <div class="hole-input-grid" style="grid-template-columns:1fr 1fr;">
-        <div>${scoreInputHtml(aLabel, matchData.teamA[idx], `data-side="teamA"`)}</div>
-        <div>${scoreInputHtml(bLabel, matchData.teamB[idx], `data-side="teamB"`)}</div>
+        <div>${stepperHtml(aLabel, matchData.teamA[idx], 'teamA', true)}</div>
+        <div>${stepperHtml(bLabel, matchData.teamB[idx], 'teamB', true)}</div>
       </div>
       ${hcBadge ? `<p class="team-hc-badge">${hcBadge}</p>` : ''}
     `;
@@ -2208,18 +2271,20 @@
         renderSingleMatchScoring(container, matchData, holeRef, aLabel, bLabel, allocA, allocB, hcBadge, onCommit, onAdvance);
       });
     });
-    container.querySelectorAll('.hin-score').forEach(inp=>{
-      inp.addEventListener('change', ()=>{
-        const side = inp.dataset.side;
-        const v = inp.value === '' ? null : Math.max(1, Math.min(15, parseInt(inp.value,10)||0));
-        matchData[side][idx] = v;
-        const liveStatus = updateSingleMatchStatusUI(container, matchData, allocA, allocB);
-        onCommit(liveStatus);
-        const bothFilled = matchData.teamA[idx]!==null && matchData.teamB[idx]!==null;
-        if(bothFilled && hole < 18){
-          setTimeout(()=>{ holeRef.value = hole+1; onAdvance(); }, 450);
-        }
-      });
+
+    const fields = {
+      teamA: { get: ()=> matchData.teamA[idx], set: (v)=> { matchData.teamA[idx] = v; } },
+      teamB: { get: ()=> matchData.teamB[idx], set: (v)=> { matchData.teamB[idx] = v; } }
+    };
+    let advanceTimer = null;
+    wireSteppers(container, fields, ()=>{
+      const liveStatus = updateSingleMatchStatusUI(container, matchData, allocA, allocB);
+      onCommit(liveStatus);
+      clearTimeout(advanceTimer);
+      const bothFilled = matchData.teamA[idx]!==null && matchData.teamB[idx]!==null;
+      if(bothFilled && hole < 18){
+        advanceTimer = setTimeout(()=>{ holeRef.value = hole+1; onAdvance(); }, 450);
+      }
     });
 
     return status;
@@ -2276,8 +2341,8 @@
       }, hole)}
       <p class="hole-label"><span class="hl-num">HOLE ${hole}</span><span class="hl-of">OF 18</span></p>
       <div class="hole-input-grid">
-        <div>${scoreInputHtml(aNames[0], matchData.teamA[0][idx], `data-side="teamA" data-p="0"`)}${scoreInputHtml(aNames[1], matchData.teamA[1][idx], `data-side="teamA" data-p="1"`)}</div>
-        <div>${scoreInputHtml(bNames[0], matchData.teamB[0][idx], `data-side="teamB" data-p="0"`)}${scoreInputHtml(bNames[1], matchData.teamB[1][idx], `data-side="teamB" data-p="1"`)}</div>
+        <div>${stepperHtml(aNames[0], matchData.teamA[0][idx], 'teamA-0')}${stepperHtml(aNames[1], matchData.teamA[1][idx], 'teamA-1')}</div>
+        <div>${stepperHtml(bNames[0], matchData.teamB[0][idx], 'teamB-0')}${stepperHtml(bNames[1], matchData.teamB[1][idx], 'teamB-1')}</div>
       </div>
       ${hcBadge ? `<p class="team-hc-badge">${hcBadge}</p>` : ''}
     `;
@@ -2288,19 +2353,26 @@
         renderBestBallScoring(container, matchData, holeRef, aNames, bNames, allocsA, allocsB, hcBadge, onCommit, onAdvance);
       });
     });
-    container.querySelectorAll('.hin-score').forEach(inp=>{
-      inp.addEventListener('change', ()=>{
-        const side = inp.dataset.side, p = parseInt(inp.dataset.p,10);
-        const v = inp.value === '' ? null : Math.max(1, Math.min(15, parseInt(inp.value,10)||0));
-        matchData[side][p][idx] = v;
-        const liveStatus = updateBestBallStatusUI(container, matchData, allocsA, allocsB);
-        onCommit(liveStatus);
-        const bothSidesReady = (matchData.teamA[0][idx]!==null || matchData.teamA[1][idx]!==null)
-          && (matchData.teamB[0][idx]!==null || matchData.teamB[1][idx]!==null);
-        if(bothSidesReady && hole < 18){
-          setTimeout(()=>{ holeRef.value = hole+1; onAdvance(); }, 450);
-        }
+
+    const fields = {};
+    ['teamA','teamB'].forEach(side=>{
+      [0,1].forEach(p=>{
+        fields[`${side}-${p}`] = {
+          get: ()=> matchData[side][p][idx],
+          set: (v)=> { matchData[side][p][idx] = v; }
+        };
       });
+    });
+    let advanceTimer = null;
+    wireSteppers(container, fields, ()=>{
+      const liveStatus = updateBestBallStatusUI(container, matchData, allocsA, allocsB);
+      onCommit(liveStatus);
+      clearTimeout(advanceTimer);
+      const bothSidesReady = (matchData.teamA[0][idx]!==null || matchData.teamA[1][idx]!==null)
+        && (matchData.teamB[0][idx]!==null || matchData.teamB[1][idx]!==null);
+      if(bothSidesReady && hole < 18){
+        advanceTimer = setTimeout(()=>{ holeRef.value = hole+1; onAdvance(); }, 450);
+      }
     });
 
     return status;

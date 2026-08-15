@@ -1532,6 +1532,7 @@
     teamB: [],
     picks: { r1: null, r2: [null,null], r3: [null,null], r4: [null,null,null,null] },
     strokeIndex: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], // hole difficulty rank, 1=hardest. Edit in Course Setup to match your real course.
+    lastSavedAt: 0, // timestamp of the last save — used to detect which of several cached copies is actually newest
     holeScores: {
       r1: {
         teamA: [Array(18).fill(null), Array(18).fill(null), Array(18).fill(null), Array(18).fill(null)],
@@ -1654,6 +1655,8 @@
   }
 
   function sanitizeState(){
+    if(typeof state.lastSavedAt !== 'number') state.lastSavedAt = 0;
+
     // Guard against a corrupted/short pool from an old save wiping out the
     // draft screen — always keep exactly 8 pool entries.
     if(!Array.isArray(state.pool) || state.pool.length !== 8){
@@ -1731,29 +1734,45 @@
     await loadApiUrl();
     loadIdentity();
 
-    let loaded = false;
+    let serverState = null;
+    let serverJson = null;
     try{
       const res = await fetch(apiEndpoint());
       const data = await res.json();
       if(data && data.state){
-        state = Object.assign(JSON.parse(JSON.stringify(defaultState)), data.state);
-        lastSyncedJSON = JSON.stringify(data.state);
-        loaded = true;
+        serverState = data.state;
+        serverJson = JSON.stringify(data.state);
         sharedEverWorked = true;
       }
     }catch(e){
       console.debug('API load failed, falling back to local backup.');
     }
-    if(!loaded){
-      try{
-        const v = localStorage.getItem(LOCAL_KEY);
-        if(v){
-          const parsed = JSON.parse(v);
-          state = Object.assign(JSON.parse(JSON.stringify(defaultState)), parsed);
-          pendingSharedSync = true;
-        }
-      }catch(e){ /* nothing saved anywhere yet, or storage blocked */ }
+
+    let localState = null;
+    try{
+      const v = localStorage.getItem(LOCAL_KEY);
+      if(v) localState = JSON.parse(v);
+    }catch(e){ /* nothing saved locally yet, or storage blocked */ }
+
+    // Prefer whichever copy actually has the later save timestamp, rather
+    // than just trusting whichever one happened to answer first — this is
+    // what stops an older cached device from clobbering newer data (e.g.
+    // photos added later, on a different phone) after a server reset.
+    const serverTime = (serverState && typeof serverState.lastSavedAt === 'number') ? serverState.lastSavedAt : -1;
+    const localTime = (localState && typeof localState.lastSavedAt === 'number') ? localState.lastSavedAt : -1;
+
+    if(localState && localTime > serverTime){
+      state = Object.assign(JSON.parse(JSON.stringify(defaultState)), localState);
+      lastSyncedJSON = serverJson; // still what the server last reported — pushes will now correct it
+      pendingSharedSync = true;
+    } else if(serverState){
+      state = Object.assign(JSON.parse(JSON.stringify(defaultState)), serverState);
+      lastSyncedJSON = serverJson;
+    } else if(localState){
+      state = Object.assign(JSON.parse(JSON.stringify(defaultState)), localState);
+      pendingSharedSync = true;
     }
+
     sanitizeState();
     lastSyncTime = Date.now();
     renderAll();
@@ -1767,6 +1786,7 @@
   }
 
   async function save(){
+    state.lastSavedAt = Date.now();
     const json = JSON.stringify(state);
 
     try{
@@ -1818,6 +1838,25 @@
   async function pollRemote(){
     if(pendingSharedSync && !isEditingActive()){
       try{
+        // Before overwriting the server, make sure someone else hasn't
+        // already saved something newer in the meantime.
+        const checkRes = await fetch(apiEndpoint());
+        const checkData = await checkRes.json();
+        const serverTime = (checkData && checkData.state && typeof checkData.state.lastSavedAt === 'number') ? checkData.state.lastSavedAt : -1;
+        const myTime = typeof state.lastSavedAt === 'number' ? state.lastSavedAt : 0;
+        if(serverTime > myTime){
+          state = Object.assign(JSON.parse(JSON.stringify(defaultState)), checkData.state);
+          sanitizeState();
+          lastSyncedJSON = JSON.stringify(checkData.state);
+          pendingSharedSync = false;
+          sharedEverWorked = true;
+          pollFailCount = 0;
+          lastSyncTime = Date.now();
+          renderAll();
+          updateLiveBadge();
+          return;
+        }
+
         const json = JSON.stringify(state);
         const res = await fetch(apiEndpoint(), {
           method: 'POST',
@@ -1847,7 +1886,9 @@
       sharedEverWorked = true;
       if(data && data.state){
         const json = JSON.stringify(data.state);
-        if(json !== lastSyncedJSON){
+        const incomingTime = typeof data.state.lastSavedAt === 'number' ? data.state.lastSavedAt : 0;
+        const currentTime = typeof state.lastSavedAt === 'number' ? state.lastSavedAt : 0;
+        if(json !== lastSyncedJSON && incomingTime >= currentTime){
           state = Object.assign(JSON.parse(JSON.stringify(defaultState)), data.state);
           sanitizeState();
           lastSyncedJSON = json;

@@ -1289,6 +1289,103 @@
     color:var(--ink-soft);
   }
 
+  .lineup-panel{
+    padding:14px 16px 4px;
+  }
+  .lineup-team{
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:12px;
+  }
+  .lineup-team-label{
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--fairway);
+    margin:0 0 4px;
+  }
+  .lineup-instruction{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  .lineup-chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .lineup-chip{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 12px;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:20px;
+    font-family:'Oswald',sans-serif;
+    font-weight:500;
+    font-size:13px;
+    color:var(--ink);
+    cursor:pointer;
+    position:relative;
+  }
+  .lineup-chip.picked{
+    border-color:var(--gold);
+    background:var(--gold);
+    color:var(--fairway);
+    font-weight:700;
+  }
+  .lineup-chip-num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:16px; height:16px;
+    border-radius:50%;
+    background:var(--fairway);
+    color:var(--paper);
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+  }
+  .lineup-shuffle-btn{
+    background:none;
+    border:1px dashed var(--ink-soft);
+    color:var(--ink-soft);
+    border-radius:6px;
+    padding:6px 10px;
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    cursor:pointer;
+  }
+  .lineup-summary{
+    font-size:13px;
+    color:var(--ink);
+    line-height:1.6;
+    margin:0 0 8px;
+  }
+  .lineup-edit-btn{
+    background:none;
+    border:1px solid var(--fairway);
+    color:var(--fairway);
+    border-radius:6px;
+    padding:6px 12px;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:11px;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .lineup-waiting{
+    text-align:center;
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    padding:16px;
+  }
+
   footer{
     text-align:center;
     padding:22px 20px 40px;
@@ -1464,8 +1561,9 @@
       <div class="round-head">
         <p class="round-tag">Day 1 &middot; PM</p>
         <h3 class="round-title">Round 2 — 2-Man Best Ball</h3>
-        <p class="round-meta">Split into pairs (1&amp;2, 3&amp;4 by roster order). Tap who wins each hole — match status updates live.</p>
+        <p class="round-meta">Captains draft the pairs below, then enter gross strokes hole-by-hole — net result updates live.</p>
       </div>
+      <div class="lineup-panel" id="lineup-r2"></div>
       <div class="matchups" id="matchups-r2"></div>
       <div class="round-points"><span>2 matches &middot; 1 pt each, tie = 0.5</span><span class="pts" id="ptsr2">0–0</span></div>
     </div>
@@ -1477,8 +1575,9 @@
       <div class="round-head">
         <p class="round-tag">Day 2 &middot; AM</p>
         <h3 class="round-title">Round 3 — 2-Man Alternate Shot</h3>
-        <p class="round-meta">Same or reshuffled pairs. One ball per team, alternate every shot. Foursomes rules.</p>
+        <p class="round-meta">Captains draft fresh pairs below. One ball per team, alternate every shot — foursomes rules.</p>
       </div>
+      <div class="lineup-panel" id="lineup-r3"></div>
       <div class="matchups" id="matchups-r3"></div>
       <div class="round-points"><span>2 matches &middot; 1 pt each, tie = 0.5</span><span class="pts" id="ptsr3">0–0</span></div>
     </div>
@@ -1490,8 +1589,9 @@
       <div class="round-head">
         <p class="round-tag">Day 2 &middot; PM</p>
         <h3 class="round-title">Round 4 — Singles Match Play</h3>
-        <p class="round-meta">Head-to-head, 1v1, net. 4 matches, biggest points swing of the trip — decides the Cup.</p>
+        <p class="round-meta">Captains set the singles order below. 4 matches, biggest points swing of the trip — decides the Cup.</p>
       </div>
+      <div class="lineup-panel" id="lineup-r4"></div>
       <div class="matchups" id="matchups-r4"></div>
       <div class="round-points"><span>4 matches &middot; 1 pt each, tie = 0.5</span><span class="pts" id="ptsr4">0–0</span></div>
     </div>
@@ -1532,6 +1632,16 @@
     teamB: [],
     picks: { r1: null, r2: [null,null], r3: [null,null], r4: [null,null,null,null] },
     strokeIndex: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], // hole difficulty rank, 1=hardest. Edit in Course Setup to match your real course.
+    // Per-round lineups, set via a mini captain's draft before each round.
+    // null = not set yet (round is locked until both captains set theirs).
+    // Value is an array of 4 roster indices (0-3) in the order the captain
+    // chose them. r2/r3: first 2 = Pair 1, last 2 = Pair 2. r4: position-by-
+    // position singles order.
+    lineups: {
+      r2: { teamA: null, teamB: null },
+      r3: { teamA: null, teamB: null },
+      r4: { teamA: null, teamB: null }
+    },
     lastSavedAt: 0, // timestamp of the last save — used to detect which of several cached copies is actually newest
     holeScores: {
       r1: {
@@ -1656,6 +1766,24 @@
 
   function sanitizeState(){
     if(typeof state.lastSavedAt !== 'number') state.lastSavedAt = 0;
+
+    // Guard lineups shape — each round needs a teamA/teamB slot, each
+    // either null or a valid 4-item permutation of [0,1,2,3].
+    function validLineup(v){
+      return Array.isArray(v) && v.length===4 && [0,1,2,3].every(n=>v.includes(n));
+    }
+    if(!state.lineups || typeof state.lineups !== 'object'){
+      state.lineups = JSON.parse(JSON.stringify(defaultState.lineups));
+    } else {
+      ['r2','r3','r4'].forEach(r=>{
+        if(!state.lineups[r]) state.lineups[r] = {teamA:null, teamB:null};
+        ['teamA','teamB'].forEach(t=>{
+          if(state.lineups[r][t] !== null && !validLineup(state.lineups[r][t])){
+            state.lineups[r][t] = null;
+          }
+        });
+      });
+    }
 
     // Guard against a corrupted/short pool from an old save wiping out the
     // draft screen — always keep exactly 8 pool entries.
@@ -2209,6 +2337,7 @@
     state.captainB = null;
     state.assign = [null,null,null,null,null,null,null,null];
     state.pickLog = [];
+    state.lineups = JSON.parse(JSON.stringify(defaultState.lineups));
     renderCaptainSelects();
     renderDraftBoard();
     syncTeamsFromDraft();
@@ -3016,16 +3145,133 @@
     return status;
   }
 
-  function renderPairRound(containerId, ptsId, roundKey, pairIdxs){
+  // ================= LINEUPS (per-round captain's draft for pairings) =================
+
+  // In-progress picks, not yet committed to shared state (so a half-made
+  // selection doesn't sync to other devices mid-pick).
+  let lineupDraft = {
+    r2: { teamA: [], teamB: [] },
+    r3: { teamA: [], teamB: [] },
+    r4: { teamA: [], teamB: [] }
+  };
+
+  function lineupMode(roundKey){
+    return roundKey === 'r4' ? 'sequence' : 'pairs';
+  }
+
+  function shuffledOrder(){
+    const arr = [0,1,2,3];
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+    return arr;
+  }
+
+  function teamLineupBlockHtml(roundKey, team, teamName){
+    const mode = lineupMode(roundKey);
+    const set = state.lineups[roundKey][team];
+    const players = state[team];
+
+    if(set){
+      let summary;
+      if(mode==='pairs'){
+        summary = `Pair 1: ${escapeHtml(rawNameAt(team,set[0]))} &amp; ${escapeHtml(rawNameAt(team,set[1]))}<br>Pair 2: ${escapeHtml(rawNameAt(team,set[2]))} &amp; ${escapeHtml(rawNameAt(team,set[3]))}`;
+      } else {
+        summary = set.map((idx,pos)=>`${pos+1}. ${escapeHtml(rawNameAt(team,idx))}`).join(' &middot; ');
+      }
+      return `<div class="lineup-team">
+        <p class="lineup-team-label">${escapeHtml(teamName)}</p>
+        <div class="lineup-summary">${summary}</div>
+        <button class="lineup-edit-btn" data-round="${roundKey}" data-team="${team}">Edit Lineup</button>
+      </div>`;
+    }
+
+    const draft = lineupDraft[roundKey][team];
+    const instruction = mode==='pairs'
+      ? 'Captain: tap 2 players to pair them together — the other 2 form Pair 2.'
+      : 'Captain: tap players in the order you want them to play.';
+    const chips = players.map((p,i)=>{
+      const picked = draft.includes(i);
+      const pickNum = picked ? draft.indexOf(i)+1 : null;
+      return `<button class="lineup-chip${picked?' picked':''}" data-round="${roundKey}" data-team="${team}" data-idx="${i}">
+        ${smallAvatarHtml(p,20)}${escapeHtml((p&&p.name)||'TBD')}${pickNum?`<span class="lineup-chip-num">${pickNum}</span>`:''}
+      </button>`;
+    }).join('');
+    return `<div class="lineup-team">
+      <p class="lineup-team-label">${escapeHtml(teamName)}</p>
+      <p class="lineup-instruction">${instruction}</p>
+      <div class="lineup-chips">${chips}</div>
+      <button class="lineup-shuffle-btn" data-round="${roundKey}" data-team="${team}">🎲 Shuffle instead</button>
+    </div>`;
+  }
+
+  function renderLineupPanel(roundKey){
+    const el = document.getElementById('lineup-' + roundKey);
+    if(!el) return;
+    el.innerHTML = teamLineupBlockHtml(roundKey, 'teamA', state.teamAName) + teamLineupBlockHtml(roundKey, 'teamB', state.teamBName);
+
+    el.querySelectorAll('.lineup-chip').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const roundKey2 = btn.dataset.round, team = btn.dataset.team, idx = parseInt(btn.dataset.idx,10);
+        const mode = lineupMode(roundKey2);
+        const draft = lineupDraft[roundKey2][team];
+        const pos = draft.indexOf(idx);
+        if(pos >= 0) draft.splice(pos,1);
+        else draft.push(idx);
+
+        const needed = mode==='pairs' ? 2 : 4;
+        if(draft.length === needed){
+          const finalOrder = mode==='pairs'
+            ? [...draft, ...[0,1,2,3].filter(i=>!draft.includes(i))]
+            : [...draft];
+          state.lineups[roundKey2][team] = finalOrder;
+          lineupDraft[roundKey2][team] = [];
+          queueSave();
+        }
+        renderRounds();
+      });
+    });
+    el.querySelectorAll('.lineup-edit-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.lineups[btn.dataset.round][btn.dataset.team] = null;
+        lineupDraft[btn.dataset.round][btn.dataset.team] = [];
+        queueSave();
+        renderRounds();
+      });
+    });
+    el.querySelectorAll('.lineup-shuffle-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.lineups[btn.dataset.round][btn.dataset.team] = shuffledOrder();
+        lineupDraft[btn.dataset.round][btn.dataset.team] = [];
+        queueSave();
+        renderRounds();
+      });
+    });
+  }
+
+  // ================= ROUND MATCH RENDERING (uses the lineups above) =================
+
+  function renderPairRound(containerId, ptsId, roundKey){
+    renderLineupPanel(roundKey);
     const el = document.getElementById(containerId);
+    const lineupA = state.lineups[roundKey].teamA;
+    const lineupB = state.lineups[roundKey].teamB;
+    if(!lineupA || !lineupB){
+      el.innerHTML = `<p class="lineup-waiting">⏳ Waiting on both captains to set their lineup above before matches unlock.</p>`;
+      document.getElementById(ptsId).textContent = '0–0';
+      return;
+    }
     el.innerHTML = '';
-    pairIdxs.forEach((pair, mi)=>{
-      const aNames = pair.map(i=>nameAt('teamA', i));
-      const bNames = pair.map(i=>nameAt('teamB', i));
-      const aRawNames = pair.map(i=>rawNameAt('teamA', i));
-      const bRawNames = pair.map(i=>rawNameAt('teamB', i));
-      const aAvatars = pair.map(i=>smallAvatarHtml(state.teamA[i], 24));
-      const bAvatars = pair.map(i=>smallAvatarHtml(state.teamB[i], 24));
+    [0,1].forEach(mi=>{
+      const pairA = [lineupA[mi*2], lineupA[mi*2+1]];
+      const pairB = [lineupB[mi*2], lineupB[mi*2+1]];
+      const aNames = pairA.map(i=>nameAt('teamA', i));
+      const bNames = pairB.map(i=>nameAt('teamB', i));
+      const aRawNames = pairA.map(i=>rawNameAt('teamA', i));
+      const bRawNames = pairB.map(i=>rawNameAt('teamB', i));
+      const aAvatars = pairA.map(i=>smallAvatarHtml(state.teamA[i], 24));
+      const bAvatars = pairB.map(i=>smallAvatarHtml(state.teamB[i], 24));
       const wrap = document.createElement('div');
       wrap.className = 'match-block';
       wrap.innerHTML = `<p class="match-names"><span class="mn-a">${escapeHtml(aNames.join(' / '))}</span><span class="mn-vs">vs</span><span class="mn-b">${escapeHtml(bNames.join(' / '))}</span></p><div class="match-scoring"></div>`;
@@ -3034,12 +3280,12 @@
       const scoringDiv = wrap.querySelector('.match-scoring');
       const holeRef = {get value(){return selectedHole[roundKey][mi];}, set value(v){selectedHole[roundKey][mi]=v;}};
 
-      const hcA = pair.map(i => Number((state.teamA[i]||{}).hc)||0);
-      const hcB = pair.map(i => Number((state.teamB[i]||{}).hc)||0);
+      const hcA = pairA.map(i => Number((state.teamA[i]||{}).hc)||0);
+      const hcB = pairB.map(i => Number((state.teamB[i]||{}).hc)||0);
       const allocsA = hcA.map(hc => (h)=>strokesOnHole(hc, h));
       const allocsB = hcB.map(hc => (h)=>strokesOnHole(hc, h));
       const hcBadge = `Best ball, full individual handicap &middot; ${escapeHtml(aNames[0])} ${hcA[0]} / ${escapeHtml(aNames[1])} ${hcA[1]} &nbsp;vs&nbsp; ${escapeHtml(bNames[0])} ${hcB[0]} / ${escapeHtml(bNames[1])} ${hcB[1]}`;
-      const participants = pair.map(i=>(state.teamA[i]||{}).poolIdx).concat(pair.map(i=>(state.teamB[i]||{}).poolIdx));
+      const participants = pairA.map(i=>(state.teamA[i]||{}).poolIdx).concat(pairB.map(i=>(state.teamB[i]||{}).poolIdx));
       const locked = !canEditMatch(participants);
 
       let onCommitFn, onAdvanceFn;
@@ -3058,12 +3304,22 @@
     updateRoundPtsTally(ptsId, roundKey);
   }
 
-  function renderAltShotRound(containerId, ptsId, roundKey, pairIdxs){
+  function renderAltShotRound(containerId, ptsId, roundKey){
+    renderLineupPanel(roundKey);
     const el = document.getElementById(containerId);
+    const lineupA = state.lineups[roundKey].teamA;
+    const lineupB = state.lineups[roundKey].teamB;
+    if(!lineupA || !lineupB){
+      el.innerHTML = `<p class="lineup-waiting">⏳ Waiting on both captains to set their lineup above before matches unlock.</p>`;
+      document.getElementById(ptsId).textContent = '0–0';
+      return;
+    }
     el.innerHTML = '';
-    pairIdxs.forEach((pair, mi)=>{
-      const aNames = pair.map(i=>nameAt('teamA', i)).join(' / ');
-      const bNames = pair.map(i=>nameAt('teamB', i)).join(' / ');
+    [0,1].forEach(mi=>{
+      const pairA = [lineupA[mi*2], lineupA[mi*2+1]];
+      const pairB = [lineupB[mi*2], lineupB[mi*2+1]];
+      const aNames = pairA.map(i=>nameAt('teamA', i)).join(' / ');
+      const bNames = pairB.map(i=>nameAt('teamB', i)).join(' / ');
       const wrap = document.createElement('div');
       wrap.className = 'match-block';
       wrap.innerHTML = `<p class="match-names"><span class="mn-a">${escapeHtml(aNames)}</span><span class="mn-vs">vs</span><span class="mn-b">${escapeHtml(bNames)}</span></p><div class="match-scoring"></div>`;
@@ -3072,8 +3328,8 @@
       const scoringDiv = wrap.querySelector('.match-scoring');
       const holeRef = {get value(){return selectedHole[roundKey][mi];}, set value(v){selectedHole[roundKey][mi]=v;}};
 
-      const hcA = pairCombinedHc('teamA', pair[0], pair[1]);
-      const hcB = pairCombinedHc('teamB', pair[0], pair[1]);
+      const hcA = pairCombinedHc('teamA', pairA[0], pairA[1]);
+      const hcB = pairCombinedHc('teamB', pairB[0], pairB[1]);
       const diff = Math.abs(hcA - hcB);
       const higherIsA = hcA > hcB;
       const allocA = (h)=> higherIsA ? strokesOnHole(diff, h) : 0;
@@ -3081,7 +3337,7 @@
       const hcBadge = diff===0
         ? `Combined team handicap &middot; ${escapeHtml(state.teamAName)} ${hcA} = ${escapeHtml(state.teamBName)} ${hcB} &middot; playing scratch`
         : `Combined team handicap &middot; ${escapeHtml(state.teamAName)} ${hcA} vs ${escapeHtml(state.teamBName)} ${hcB} &middot; ${escapeHtml(higherIsA?state.teamAName:state.teamBName)} gets <b>${diff}</b> stroke${diff===1?'':'s'}`;
-      const participants = [pair[0], pair[1]].map(i=>(state.teamA[i]||{}).poolIdx).concat([pair[0], pair[1]].map(i=>(state.teamB[i]||{}).poolIdx));
+      const participants = pairA.map(i=>(state.teamA[i]||{}).poolIdx).concat(pairB.map(i=>(state.teamB[i]||{}).poolIdx));
       const locked = !canEditMatch(participants);
 
       let onCommitFn, onAdvanceFn;
@@ -3101,25 +3357,34 @@
   }
 
   function renderSinglesRound(containerId, ptsId, roundKey){
+    renderLineupPanel(roundKey);
     const el = document.getElementById(containerId);
+    const lineupA = state.lineups[roundKey].teamA;
+    const lineupB = state.lineups[roundKey].teamB;
+    if(!lineupA || !lineupB){
+      el.innerHTML = `<p class="lineup-waiting">⏳ Waiting on both captains to set their lineup above before matches unlock.</p>`;
+      document.getElementById(ptsId).textContent = '0–0';
+      return;
+    }
     el.innerHTML = '';
-    for(let i=0;i<4;i++){
-      const aName = nameAt('teamA', i);
-      const bName = nameAt('teamB', i);
-      const aRawName = rawNameAt('teamA', i);
-      const bRawName = rawNameAt('teamB', i);
-      const aAvatar = smallAvatarHtml(state.teamA[i], 26);
-      const bAvatar = smallAvatarHtml(state.teamB[i], 26);
+    for(let mi=0; mi<4; mi++){
+      const ai = lineupA[mi], bi = lineupB[mi];
+      const aName = nameAt('teamA', ai);
+      const bName = nameAt('teamB', bi);
+      const aRawName = rawNameAt('teamA', ai);
+      const bRawName = rawNameAt('teamB', bi);
+      const aAvatar = smallAvatarHtml(state.teamA[ai], 26);
+      const bAvatar = smallAvatarHtml(state.teamB[bi], 26);
       const wrap = document.createElement('div');
       wrap.className = 'match-block';
       wrap.innerHTML = `<p class="match-names"><span class="mn-a">${escapeHtml(aName)}</span><span class="mn-vs">vs</span><span class="mn-b">${escapeHtml(bName)}</span></p><div class="match-scoring"></div>`;
       el.appendChild(wrap);
-      const matchData = state.holeScores[roundKey][i];
+      const matchData = state.holeScores[roundKey][mi];
       const scoringDiv = wrap.querySelector('.match-scoring');
-      const holeRef = {get value(){return selectedHole[roundKey][i];}, set value(v){selectedHole[roundKey][i]=v;}};
+      const holeRef = {get value(){return selectedHole[roundKey][mi];}, set value(v){selectedHole[roundKey][mi]=v;}};
 
-      const hcA = Number((state.teamA[i]||{}).hc) || 0;
-      const hcB = Number((state.teamB[i]||{}).hc) || 0;
+      const hcA = Number((state.teamA[ai]||{}).hc) || 0;
+      const hcB = Number((state.teamB[bi]||{}).hc) || 0;
       const diff = Math.abs(hcA - hcB);
       const higherIsA = hcA > hcB;
       const allocA = (h)=> higherIsA ? strokesOnHole(diff, h) : 0;
@@ -3127,12 +3392,12 @@
       const hcBadge = diff===0
         ? `Even handicaps &middot; playing scratch against each other`
         : `${escapeHtml(higherIsA ? aName : bName)} gets <b>${diff}</b> stroke${diff===1?'':'s'} (handicap difference)`;
-      const participants = [(state.teamA[i]||{}).poolIdx, (state.teamB[i]||{}).poolIdx];
+      const participants = [(state.teamA[ai]||{}).poolIdx, (state.teamB[bi]||{}).poolIdx];
       const locked = !canEditMatch(participants);
 
       let onCommitFn, onAdvanceFn;
       onCommitFn = (liveStatus)=>{
-        state.picks[roundKey][i] = liveStatus.decided ? liveStatus.winner : null;
+        state.picks[roundKey][mi] = liveStatus.decided ? liveStatus.winner : null;
         updateRoundPtsTally(ptsId, roundKey);
         updateScoreboard();
         queueSave();
@@ -3141,15 +3406,15 @@
         renderSingleMatchScoring(scoringDiv, matchData, holeRef, aRawName, bRawName, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn, aAvatar, bAvatar, locked);
       };
       const status = renderSingleMatchScoring(scoringDiv, matchData, holeRef, aRawName, bRawName, allocA, allocB, hcBadge, onCommitFn, onAdvanceFn, aAvatar, bAvatar, locked);
-      state.picks[roundKey][i] = status.decided ? status.winner : null;
+      state.picks[roundKey][mi] = status.decided ? status.winner : null;
     }
     updateRoundPtsTally(ptsId, roundKey);
   }
 
   function renderRounds(){
     renderRound1();
-    renderPairRound('matchups-r2', 'ptsr2', 'r2', [[0,1],[2,3]]);
-    renderAltShotRound('matchups-r3', 'ptsr3', 'r3', [[0,1],[2,3]]);
+    renderPairRound('matchups-r2', 'ptsr2', 'r2');
+    renderAltShotRound('matchups-r3', 'ptsr3', 'r3');
     renderSinglesRound('matchups-r4', 'ptsr4', 'r4');
     updateScoreboard();
   }
@@ -3197,39 +3462,59 @@
     el.appendChild(ovRow('Round 1 · Stroke Play', `${state.teamAName} vs ${state.teamBName}`, r1Status, 'r1'));
 
     // Round 2 — best ball
-    [[0,1],[2,3]].forEach((pair, mi)=>{
-      const matchData = state.holeScores.r2[mi];
-      const allocsA = pair.map(i => { const hc = Number((state.teamA[i]||{}).hc)||0; return (h)=>strokesOnHole(hc,h); });
-      const allocsB = pair.map(i => { const hc = Number((state.teamB[i]||{}).hc)||0; return (h)=>strokesOnHole(hc,h); });
-      const status = computeMatchStatus(deriveBestBallResults(matchData, allocsA, allocsB));
-      const names = pair.map(i=>nameAt('teamA',i)).join('/') + ' vs ' + pair.map(i=>nameAt('teamB',i)).join('/');
-      el.appendChild(ovRow('Round 2 · Best Ball', names, status, 'r2'));
-    });
+    if(!state.lineups.r2.teamA || !state.lineups.r2.teamB){
+      el.appendChild(ovRow('Round 2 · Best Ball', 'Lineup not set yet', {decided:false, diff:0, label:'AWAITING LINEUP'}, 'r2'));
+    } else {
+      const lineupA = state.lineups.r2.teamA, lineupB = state.lineups.r2.teamB;
+      [0,1].forEach(mi=>{
+        const pairA = [lineupA[mi*2], lineupA[mi*2+1]];
+        const pairB = [lineupB[mi*2], lineupB[mi*2+1]];
+        const matchData = state.holeScores.r2[mi];
+        const allocsA = pairA.map(i => { const hc = Number((state.teamA[i]||{}).hc)||0; return (h)=>strokesOnHole(hc,h); });
+        const allocsB = pairB.map(i => { const hc = Number((state.teamB[i]||{}).hc)||0; return (h)=>strokesOnHole(hc,h); });
+        const status = computeMatchStatus(deriveBestBallResults(matchData, allocsA, allocsB));
+        const names = pairA.map(i=>nameAt('teamA',i)).join('/') + ' vs ' + pairB.map(i=>nameAt('teamB',i)).join('/');
+        el.appendChild(ovRow('Round 2 · Best Ball', names, status, 'r2'));
+      });
+    }
 
     // Round 3 — alt shot
-    [[0,1],[2,3]].forEach((pair, mi)=>{
-      const matchData = state.holeScores.r3[mi];
-      const hcA = pairCombinedHc('teamA', pair[0], pair[1]);
-      const hcB = pairCombinedHc('teamB', pair[0], pair[1]);
-      const diff = Math.abs(hcA-hcB), higherIsA = hcA>hcB;
-      const allocA = (h)=> higherIsA ? strokesOnHole(diff,h) : 0;
-      const allocB = (h)=> higherIsA ? 0 : strokesOnHole(diff,h);
-      const status = computeMatchStatus(deriveSingleSideResults(matchData.teamA, matchData.teamB, allocA, allocB));
-      const names = pair.map(i=>nameAt('teamA',i)).join('/') + ' vs ' + pair.map(i=>nameAt('teamB',i)).join('/');
-      el.appendChild(ovRow('Round 3 · Alt Shot', names, status, 'r3'));
-    });
+    if(!state.lineups.r3.teamA || !state.lineups.r3.teamB){
+      el.appendChild(ovRow('Round 3 · Alt Shot', 'Lineup not set yet', {decided:false, diff:0, label:'AWAITING LINEUP'}, 'r3'));
+    } else {
+      const lineupA = state.lineups.r3.teamA, lineupB = state.lineups.r3.teamB;
+      [0,1].forEach(mi=>{
+        const pairA = [lineupA[mi*2], lineupA[mi*2+1]];
+        const pairB = [lineupB[mi*2], lineupB[mi*2+1]];
+        const matchData = state.holeScores.r3[mi];
+        const hcA = pairCombinedHc('teamA', pairA[0], pairA[1]);
+        const hcB = pairCombinedHc('teamB', pairB[0], pairB[1]);
+        const diff = Math.abs(hcA-hcB), higherIsA = hcA>hcB;
+        const allocA = (h)=> higherIsA ? strokesOnHole(diff,h) : 0;
+        const allocB = (h)=> higherIsA ? 0 : strokesOnHole(diff,h);
+        const status = computeMatchStatus(deriveSingleSideResults(matchData.teamA, matchData.teamB, allocA, allocB));
+        const names = pairA.map(i=>nameAt('teamA',i)).join('/') + ' vs ' + pairB.map(i=>nameAt('teamB',i)).join('/');
+        el.appendChild(ovRow('Round 3 · Alt Shot', names, status, 'r3'));
+      });
+    }
 
     // Round 4 — singles
-    for(let i=0;i<4;i++){
-      const matchData = state.holeScores.r4[i];
-      const hcA = Number((state.teamA[i]||{}).hc)||0;
-      const hcB = Number((state.teamB[i]||{}).hc)||0;
-      const diff = Math.abs(hcA-hcB), higherIsA = hcA>hcB;
-      const allocA = (h)=> higherIsA ? strokesOnHole(diff,h) : 0;
-      const allocB = (h)=> higherIsA ? 0 : strokesOnHole(diff,h);
-      const status = computeMatchStatus(deriveSingleSideResults(matchData.teamA, matchData.teamB, allocA, allocB));
-      const names = `${nameAt('teamA',i)} vs ${nameAt('teamB',i)}`;
-      el.appendChild(ovRow('Round 4 · Singles', names, status, 'r4'));
+    if(!state.lineups.r4.teamA || !state.lineups.r4.teamB){
+      el.appendChild(ovRow('Round 4 · Singles', 'Lineup not set yet', {decided:false, diff:0, label:'AWAITING LINEUP'}, 'r4'));
+    } else {
+      const lineupA = state.lineups.r4.teamA, lineupB = state.lineups.r4.teamB;
+      for(let mi=0; mi<4; mi++){
+        const ai = lineupA[mi], bi = lineupB[mi];
+        const matchData = state.holeScores.r4[mi];
+        const hcA = Number((state.teamA[ai]||{}).hc)||0;
+        const hcB = Number((state.teamB[bi]||{}).hc)||0;
+        const diff = Math.abs(hcA-hcB), higherIsA = hcA>hcB;
+        const allocA = (h)=> higherIsA ? strokesOnHole(diff,h) : 0;
+        const allocB = (h)=> higherIsA ? 0 : strokesOnHole(diff,h);
+        const status = computeMatchStatus(deriveSingleSideResults(matchData.teamA, matchData.teamB, allocA, allocB));
+        const names = `${nameAt('teamA',ai)} vs ${nameAt('teamB',bi)}`;
+        el.appendChild(ovRow('Round 4 · Singles', names, status, 'r4'));
+      }
     }
 
     const totalDecided = el.querySelectorAll('.ov-row.decided').length;
